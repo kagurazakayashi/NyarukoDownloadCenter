@@ -1,0 +1,47 @@
+{
+    "name": "nyaruko-login-f",
+    "version": "1.0.0",
+    "description": "user-system 的前端",
+    "main": "index.js",
+    "scripts": {
+        "release": "npm run clean && python3 src/nyalib/Tools/nyacss.py css/index.css src/index.css && gulp css html && rm -f src/index.css && mv dist/index.html ./index.html && webpack --mode=production --progress",
+        "debug": "npm run clean && python3 src/nyalib/Tools/nyacss.py css/index.css src/index.css && cp src/index.css dist/index.css && rm -f src/index.css && cp src/index.html ./index.html && cp templates/*.html dist/ && webpack --mode=development --progress",
+        "html": "npm run clean && python3 src/nyalib/Tools/nyacss.py css/index.css src/index.css && python3 src/nyalib/Tools/nyacss.py templates dist && cp src/index.css dist/index.css && rm -f src/index.css && cp src/index.html ./index.html && cp templates/*.html dist/",
+        "clean": "rm -f index.html dist/* src/*.css"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/kagurazakayashi/NyarukoLoginF.git"
+    },
+    "keywords": [
+        "user-system"
+    ],
+    "author": "kagurazakayashi",
+    "bugs": {
+        "url": "https://github.com/kagurazakayashi/NyarukoLoginF/issues"
+    },
+    "homepage": "https://github.com/kagurazakayashi/NyarukoLoginF#readme",
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^4.22.0",
+        "@typescript-eslint/parser": "^4.22.0",
+        "eslint": "^7.25.0",
+        "eslint-config-google": "^0.14.0",
+        "eslint-import-resolver-alias": "^1.1.2",
+        "eslint-plugin-import": "^2.22.1",
+        "eslint-plugin-typescript": "^0.14.0",
+        "ts-node": "^9.1.1",
+        "typescript": "^4.2.4",
+        "typescript-eslint-parser": "^22.0.0",
+        "webpack": "^5.35.1",
+        "webpack-cli": "^4.6.0"
+    },
+    "dependencies": {
+        "gulp": "^4.0.2",
+        "gulp-clean-css": "^4.3.0",
+        "gulp-htmlmin": "^5.0.1",
+        "gulp-uglify": "^3.0.2",
+        "mdui": "^1.0.2",
+        "purecss": "^2.0.6",
+        "ts-loader": "^9.1.1"
+    }
+}
