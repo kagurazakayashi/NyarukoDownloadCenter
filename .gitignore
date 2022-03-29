@@ -9,3 +9,4 @@ design/*
 audio/*
 video/*
 fonts/*
+src/*.css

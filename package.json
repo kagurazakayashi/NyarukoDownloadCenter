@@ -4,10 +4,10 @@
     "description": "user-system 的前端",
     "main": "index.js",
     "scripts": {
-        "release": "npm run clean && python3 src/nyalib/Tools/nyacss.py css/index.css src/index.css && gulp css html && rm -f src/index.css && mv dist/index.html ./index.html && webpack --mode=production --progress",
-        "debug": "npm run clean && python3 src/nyalib/Tools/nyacss.py css/index.css src/index.css && cp src/index.css dist/index.css && rm -f src/index.css && cp src/index.html ./index.html && cp templates/*.html dist/ && webpack --mode=development --progress",
-        "html": "npm run clean && python3 src/nyalib/Tools/nyacss.py css/index.css src/index.css && python3 src/nyalib/Tools/nyacss.py templates dist && cp src/index.css dist/index.css && rm -f src/index.css && cp src/index.html ./index.html && cp templates/*.html dist/",
-        "clean": "rm -f index.html dist/* src/*.css"
+        "html": "sh script/html.sh",
+        "debug": "sh script/debug.sh",
+        "release": "sh script/release.sh",
+        "clean": "sh script/clean.sh"
     },
     "repository": {
         "type": "git",

@@ -20,7 +20,7 @@ gulp.task('css', async () => {
 
 // 壓縮 HTML
 gulp.task('html', async () => {
-    await gulp.src(['./src/*.html', './templates/*.html']) // 輸入檔案
+    await gulp.src(['./html/*.html']) // 輸入檔案
         .pipe(html({ collapseWhitespace: true, removeComments: true })) // 刪除空格和註釋
         .pipe(gulp.dest('./dist/')); // 輸出檔案
 });
