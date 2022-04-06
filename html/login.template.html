@@ -1,0 +1,39 @@
+<template id="subtemplate1">
+    <link rel="stylesheet" href="dist/login.template.css">
+    <p>&emsp;</p>
+    <h1 class="title mdui-text-color-theme">登录</h1>
+    <p>欢迎使用本系统！</p>
+    <p>首先，请您登录您的账户。</p>
+    <div class="mc-account mc-login mdui-dialog mdui-dialog-open"
+        style="top: 78.1095px; display: block; height: 540.781px;">
+        <!-- <button class="mdui-btn mdui-btn-icon close mdui-color-theme"><i class="mdui-icon material-icons">close</i></button> -->
+        <div class="mdui-dialog-title mdui-color-theme">登录</div>
+        <form data-bitwarden-watching="1">
+            <div
+                class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom mdui-textfield-invalid-html5">
+                <label class="mdui-textfield-label">用户名或邮箱</label><input class="mdui-textfield-input" name="name"
+                    type="text" required="">
+                <div class="mdui-textfield-error">账号不能为空</div>
+            </div>
+            <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom"><label
+                    class="mdui-textfield-label">密码</label><input class="mdui-textfield-input" name="password"
+                    type="password" required="">
+                <div class="mdui-textfield-error">密码不能为空</div>
+            </div>
+            <div
+                class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom captcha-field mdui-hidden">
+                <label class="mdui-textfield-label">图形验证码</label><input class="mdui-textfield-input" name="captcha_code"
+                    type="text" autocomplete="off">
+                <div class="mdui-textfield-error">请输入图形验证码</div><img class="captcha-image" src="" title="点击刷新验证码">
+            </div>
+            <div class="actions mdui-clearfix"><button class="mdui-btn mdui-ripple more-option" type="button"
+                    mdui-menu="{target: '#mc-login-menu', position: 'top', covered: true}">更多选项<i
+                        class="mdui-icon material-icons mdui-text-color-theme-icon">arrow_drop_down</i></button>
+                <ul class="mdui-menu" id="mc-login-menu">
+                    <li class="mdui-menu-item"><a class="mdui-ripple">忘记密码</a></li>
+                    <li class="mdui-menu-item"><a class="mdui-ripple">创建新账号</a></li>
+                </ul><button class="mdui-btn mdui-btn-raised mdui-color-theme action-btn">登录</button>
+            </div>
+        </form>
+    </div>
+</template>

@@ -1,0 +1,22 @@
+.mc-account {
+    max-width: 448px;
+    overflow-y: auto;
+}
+.mc-account .close {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.mc-account .mdui-dialog-title {
+    margin-bottom: 24px;
+    padding: 128px 40px 28px;
+}
+.mc-account form {
+    padding: 0 40px 62px;
+}
+.mc-account .more-option {
+    margin-left: -16px;
+}
+.mc-account .action-btn {
+    float: right;
+}
