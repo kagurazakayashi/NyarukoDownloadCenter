@@ -4,15 +4,13 @@ import NyaDebug from './nyalib/nyadebug';
 import Login from './login';
 
 export default class InitUI {
-    login:Login = new Login();
+    login: Login = new Login();
 
     constructor() {
         this.meta();
     }
 
-    windowResize() {
-        
-    }
+    windowResize() {}
 
     /**
      * 在网页中插入客户端信息以方便调试
