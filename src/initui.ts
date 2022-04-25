@@ -3,11 +3,14 @@ import NyaDom from './nyalib/nyadom';
 import NyaDebug from './nyalib/nyadebug';
 import Login from './login';
 import NyaNetwork from './nyalib/nyanetwork';
+import API from './API';
 
 export default class InitUI {
     login: Login = new Login();
 
     constructor() {
+        var api: API = new API();
+        api.getPermissionsList();
         this.meta();
     }
 

@@ -11,11 +11,9 @@ export default class Login {
     api: API = new API();
 
     constructor() {
-        this.api.getPermissionsList();
         window.g_Title = NyaDom.byClassFirst('mdui-typo-title');
         window.g_Title.innerHTML = '登录';
         const token = sessionStorage.getItem('Token');
-        console.log('==', token, '==');
         if (token == '' || token == null || token == 'undefined') {
             this.api.getTempHTML(this.templateElement, 'login.template', () => {
                 this.loginDialog();
@@ -29,16 +27,18 @@ export default class Login {
     }
 
     loginDialog() {
-        const loginDialog: HTMLDivElement = NyaAs.div(NyaDom.byClassFirst('loginDialog'));
-        window.g_Dialog = new mdui.Dialog(loginDialog, {
-            overlay: true,
-            history: false,
-            modal: true,
-            closeOnEsc: false,
-            closeOnCancel: false,
-            closeOnConfirm: false,
-            destroyOnClosed: true,
-        });
+        if (window.g_Dialog == null) {
+            const loginDialog: HTMLDivElement = NyaAs.div(NyaDom.byId('dialog'));
+            window.g_Dialog = new mdui.Dialog(loginDialog, {
+                overlay: true,
+                history: false,
+                modal: true,
+                closeOnEsc: false,
+                closeOnCancel: false,
+                closeOnConfirm: false,
+                destroyOnClosed: true,
+            });
+        }
         window.g_Dialog.open();
         window.g_Dialog.handleUpdate();
     }
@@ -92,14 +92,27 @@ export default class Login {
             { t: token },
             (data: XMLHttpRequest | null, status: number) => {
                 if (data != null) {
+                    var isTouserList = true;
                     if (data.status == 200) {
-                        const userList = new UserList();
+                        var userInfo = JSON.parse(data.response)['data'];
+                        var permission = JSON.parse(userInfo['permissions']);
+                        if (permission['id'] != 1) {
+                            isTouserList = false;
+                            console.log(data.responseText);
+                            alert('此用户没有权限');
+                        }
                     } else {
+                        isTouserList = false;
                         this.api.getTempHTML(this.templateElement, 'login.template', () => {
                             this.loginDialog();
                             this.buttonOnClick();
                             return true;
                         });
+                    }
+                    if (isTouserList) {
+                        const userList = new UserList();
+                    } else {
+                        this.api.logOut();
                     }
                 }
             },

@@ -11,7 +11,6 @@ export default class UserList {
 
     constructor() {
         window.g_Title.innerHTML = '用户列表';
-        this.api.getPermissionsList();
         this.api.getTempHTML(this.templateElement, 'userlist.template', (res) => {
             const token = sessionStorage.getItem('Token');
             if (token == '' || token == null || token == 'undefined') {
@@ -61,7 +60,17 @@ export default class UserList {
                             });
                         }
                     } else {
-                        var login = new Login();
+                        switch (redata['code']) {
+                            case 3900:
+                                sessionStorage.removeItem('Token');
+                                var login = new Login();
+                                break;
+                            case 4004:
+                                this.api.logOut();
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             },

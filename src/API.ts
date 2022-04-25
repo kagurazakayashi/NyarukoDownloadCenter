@@ -1,9 +1,10 @@
+import Login from './login';
 import NyaDom from './nyalib/nyadom';
 import NyaNetwork from './nyalib/nyanetwork';
 import NyaTemplate, { NyaTemplateElement } from './nyalib/nyatemplate';
 
 export default class API {
-    getTempHTML(templateHTML: NyaTemplateElement|null, url: string, callback: (isDone: any) => {}) {
+    getTempHTML(templateHTML: NyaTemplateElement | null, url: string, callback: (isDone: any) => {}) {
         if (!templateHTML || templateHTML.status < 1) {
             NyaTemplate.loadTemplate('dist/' + url + '.html', NyaDom.byClassFirst('container'), (templateElement: NyaTemplateElement) => {
                 templateHTML = templateElement;
@@ -25,13 +26,25 @@ export default class API {
                 if (data != null) {
                     const redata = JSON.parse(data.response);
                     if (data.status == 200) {
-                        console.log(redata);
                         window.g_PermissionsList = redata['data'];
                     }
                 }
             },
             false
         );
+    }
+
+    logOut() {
+        var token = sessionStorage.getItem('Token');
+        if (token == '' || token == null || token == 'undefined') {
+            return;
+        }
+        NyaNetwork.post(window.g_url + 'logout/', { t: token }, (data: XMLHttpRequest | null, status: number) => {
+            if (data != null) {
+                sessionStorage.removeItem('Token');
+                var login: Login = new Login();
+            }
+        });
     }
 
     formatTimeStamp(timeStamp: any, format: string) {
