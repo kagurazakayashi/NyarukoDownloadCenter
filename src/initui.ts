@@ -2,6 +2,7 @@ import mdui from 'mdui';
 import NyaDom from './nyalib/nyadom';
 import NyaDebug from './nyalib/nyadebug';
 import Login from './login';
+import NyaNetwork from './nyalib/nyanetwork';
 
 export default class InitUI {
     login: Login = new Login();
