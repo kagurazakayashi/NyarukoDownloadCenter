@@ -1,6 +1,6 @@
 import mdui from 'mdui';
 import NyaDom from './nyalib/nyadom';
-import NyaTemplate from './nyalib/nyatemplate';
+import NyaTemplate, { NyaTemplateElement } from './nyalib/nyatemplate';
 import NyaNetwork from './nyalib/nyanetwork';
 import NyaAs from './nyalib/nyaas';
 
@@ -19,44 +19,28 @@ export default class Login {
     }
 
     loadLogin() {
-        this.loadLoginUI(this.templateHTML, 'login.template', (res) => {
-            if (!res) {
-                return res;
+        NyaTemplate.loadTemplate('dist/login.template.html', NyaDom.byClassFirst('container'), (templateElement: NyaTemplateElement) => {
+            if (templateElement.status < 1) {
+                return;
             }
-            const loginDialog: HTMLDivElement = NyaAs.div(NyaDom.byId('container'));
-            window.g_Dialog = new mdui.Dialog(loginDialog, {
-                overlay: true,
-                history: false,
-                modal: true,
-                closeOnEsc: false,
-                closeOnCancel: false,
-                closeOnConfirm: false,
-                destroyOnClosed: true,
-            });
-            window.g_Dialog.open();
-            window.g_Dialog.handleUpdate();
+            this.loginDialog();
             this.buttonOnClick();
-            return true;
         });
     }
 
-    loadLoginUI(templateHTML: string, tempName: string, callback: (res: any) => {}) {
-        var tempHTML = NyaTemplate.loadTemplateHtml(templateHTML, tempName, [], false);
-        if (tempHTML == '') {
-            NyaNetwork.get('dist/' + tempName + '.html', undefined, (data: XMLHttpRequest | null, status: number) => {
-                if (data != null) {
-                    templateHTML = data.responseText;
-                    this.loadLoginUI(templateHTML, tempName, (res) => {
-                        return callback(res);
-                    });
-                } else {
-                    alert();
-                }
-            });
-        } else {
-            NyaDom.byClassFirst('container').innerHTML = tempHTML;
-            callback(true);
-        }
+    loginDialog() {
+        const loginDialog: HTMLDivElement = NyaAs.div(NyaDom.byClassFirst('loginDialog'));
+        window.g_Dialog = new mdui.Dialog(loginDialog, {
+            overlay: true,
+            history: false,
+            modal: true,
+            closeOnEsc: false,
+            closeOnCancel: false,
+            closeOnConfirm: false,
+            destroyOnClosed: true,
+        });
+        window.g_Dialog.open();
+        window.g_Dialog.handleUpdate();
     }
 
     buttonOnClick() {
