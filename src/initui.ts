@@ -4,6 +4,8 @@ import NyaDebug from './nyalib/nyadebug';
 import Login from './login';
 import NyaNetwork from './nyalib/nyanetwork';
 import API from './API';
+import UserFileList from './fileList';
+import UserList from './userList';
 
 export default class InitUI {
     login: Login = new Login();
@@ -11,6 +13,21 @@ export default class InitUI {
     constructor() {
         var api: API = new API();
         api.getPermissionsList();
+        window.onhashchange = function () {
+            var url: string[] = window.location.href.split('/#/');
+            if (url.length == 2) {
+                switch (url[1]) {
+                    case 'userInfo':
+                        const userFileList = new UserFileList();
+                        break;
+                    default:
+                        const userList = new UserList();
+                        break;
+                }
+            }else{
+                const userList = new UserList();
+            }
+        };
         this.meta();
     }
 

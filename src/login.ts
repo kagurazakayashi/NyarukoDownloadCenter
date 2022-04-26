@@ -5,6 +5,8 @@ import NyaNetwork from './nyalib/nyanetwork';
 import NyaAs from './nyalib/nyaas';
 import API from './API';
 import UserList from './userList';
+import NyaArgv from './nyalib/nyaargv';
+import UserFileList from './fileList';
 
 export default class Login {
     templateElement: NyaTemplateElement | null = null;
@@ -77,7 +79,7 @@ export default class Login {
                             window.g_Dialog.close();
                             this.getUserInfo(redata.data);
                         } else {
-                            alert(redata.msg);
+                            alert(data.responseText);
                         }
                     }
                 },

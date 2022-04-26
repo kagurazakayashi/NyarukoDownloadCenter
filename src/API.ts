@@ -1,9 +1,12 @@
+import UserFileList from './fileList';
 import Login from './login';
 import NyaDom from './nyalib/nyadom';
 import NyaNetwork from './nyalib/nyanetwork';
 import NyaTemplate, { NyaTemplateElement } from './nyalib/nyatemplate';
 
 export default class API {
+    
+
     getTempHTML(templateHTML: NyaTemplateElement | null, url: string, callback: (isDone: any) => {}) {
         if (!templateHTML || templateHTML.status < 1) {
             NyaTemplate.loadTemplate('dist/' + url + '.html', NyaDom.byClassFirst('container'), (templateElement: NyaTemplateElement) => {
