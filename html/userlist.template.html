@@ -14,6 +14,7 @@
                     <th>修改时间</th>
                     <th></th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody id="userListBody"></tbody>
@@ -27,4 +28,34 @@
             <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
         </div>
     </div>
+</template>
+<template id="row">
+    <tr>
+        <td style="display:none"></td>
+        <td>
+            <button class="mdui-btn mdui-btn-icon ulbtninfo" mdui-tooltip="{content: '管理文件'}">
+                <i class="mdui-icon material-icons">account_circle</i>
+            </button>
+        </td>
+        <td>{{ username }}</td>
+        <td>{{ nickname }}</td>
+        <td>{{ describe }}</td>
+        <td>{{ creation_date }}</td>
+        <td>{{ modification_date }}</td>
+        <td>
+            <button class="mdui-btn mdui-btn-icon ulbtnqr">
+                <i class="mdui-icon material-icons" mdui-tooltip="{content: '创建快捷登录二维码'}">center_focus_weak</i>
+            </button>
+        </td>
+        <td>
+            <button class="mdui-btn mdui-btn-icon ulbtnedit">
+                <i class="mdui-icon material-icons">edit</i>
+            </button>
+        </td>
+        <td>
+            <button class="mdui-btn mdui-btn-icon ulbtndelete" mdui-dialog="{target: '#deleteDialog'}">
+                <i class="mdui-icon material-icons">delete</i>
+            </button>
+        </td>
+    </tr>
 </template>

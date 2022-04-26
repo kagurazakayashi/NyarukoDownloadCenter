@@ -14,10 +14,11 @@ export default class UserList {
     constructor() {
         window.g_Title.innerHTML = '用户列表';
         // sessionStorage.removeItem('info');
-        this.api.getTempHTML(this.templateElement, 'userlist.template', (res) => {
+        this.api.getTempHTML(this.templateElement, 'userlist.template', (templateElement) => {
+            this.templateElement = templateElement;
             const token = sessionStorage.getItem('Token');
             if (token == '' || token == null || token == 'undefined') {
-                var login = new Login();
+                const login = new Login();
             } else {
                 this.getUserList(token);
             }
@@ -27,6 +28,15 @@ export default class UserList {
     }
 
     getUserList(t: string) {
+        const str = {
+            date: 'YYYY-MM-dd HH:mm:ss',
+            username: 'nickname',
+            nickname: 'username',
+            describe: 'describe',
+            creation_date: 'creation_date',
+            modification_date: 'modification_date',
+            click: 'click',
+        };
         NyaNetwork.post(
             window.g_url + 'userList/',
             { t: t },
@@ -35,31 +45,37 @@ export default class UserList {
                     const redata = JSON.parse(data.response);
                     if (data.status == 200) {
                         // console.log(redata);
-                        var tabStr: string = '';
-                        var infos: any[] = [];
+                        let tabStr: string = '';
+                        const infos: any[] = [];
                         redata['data'].forEach((ele: any) => {
-                            var creationDate = ele['creation_date'] > 0 ? this.api.formatTimeStamp(ele['creation_date'] * 1000, 'YYYY-MM-dd HH:mm:ss') : '';
-                            var modificationDate = ele['modification_date'] > 0 ? this.api.formatTimeStamp(ele['modification_date'] * 1000, 'YYYY-MM-dd HH:mm:ss') : '';
-                            tabStr += '<tr><td style="display:none"></td><td><button class="mdui-btn mdui-btn-icon ulbtninfo" mdui-tooltip="{content: \'管理文件\'}"><i class="mdui-icon material-icons">account_circle</i></button></td><td>' + ele['username'] + '</td><td>' + ele['nickname'] + '</td><td>' + window.g_PermissionsList[String(ele['permissions_id'])]['describe'] + '</td><td>' + creationDate + '</td><td>' + modificationDate + '</td><td><button class="mdui-btn mdui-btn-icon ulbtnedit"><i class="mdui-icon material-icons">edit</i></button></td><td><button class="mdui-btn mdui-btn-icon ulbtndelete" mdui-dialog="{target: \'#deleteDialog\'}"><i class="mdui-icon material-icons">delete</i></button></td></tr>';
+                            const creationDate = ele[str.creation_date] > 0 ? this.api.formatTimeStamp(ele[str.creation_date] * 1000, str.date) : '';
+                            const modificationDate = ele[str.modification_date] > 0 ? this.api.formatTimeStamp(ele[str.modification_date] * 1000, str.date) : '';
+                            tabStr += this.templateElement?.codeByID('row', [
+                                [str.username, ele[str.username]],
+                                [str.nickname, ele[str.nickname]],
+                                [str.describe, window.g_PermissionsList[String(ele['permissions_id'])][str.describe]],
+                                [str.creation_date, creationDate],
+                                [str.modification_date, modificationDate],
+                            ]);
                             infos.push(ele);
                         });
                         NyaDom.byId('userListBody').innerHTML = tabStr;
-                        var btninfos: HTMLButtonElement[] = NyaDom.byClass('ulbtninfo') as HTMLButtonElement[];
-                        var btnEdits: HTMLButtonElement[] = NyaDom.byClass('ulbtnedit') as HTMLButtonElement[];
-                        var btndeletes: HTMLButtonElement[] = NyaDom.byClass('ulbtndelete') as HTMLButtonElement[];
+                        const btninfos: HTMLButtonElement[] = NyaDom.byClass('ulbtninfo') as HTMLButtonElement[];
+                        const btnEdits: HTMLButtonElement[] = NyaDom.byClass('ulbtnedit') as HTMLButtonElement[];
+                        const btndeletes: HTMLButtonElement[] = NyaDom.byClass('ulbtndelete') as HTMLButtonElement[];
                         for (let i = 0; i < infos.length; i++) {
                             const elInfo: string = infos[i];
                             const elbtninfo: HTMLButtonElement = btninfos[i];
                             const that = this;
-                            elbtninfo.addEventListener('click', function () {
+                            elbtninfo.addEventListener(str.click, function () {
                                 that.userInfo(elInfo);
                             });
                             const elbtnEdit: HTMLButtonElement = btnEdits[i];
-                            elbtnEdit.addEventListener('click', function () {
+                            elbtnEdit.addEventListener(str.click, function () {
                                 that.userEdit(elInfo);
                             });
                             const elbtndeletes: HTMLButtonElement = btndeletes[i];
-                            elbtndeletes.addEventListener('click', function () {
+                            elbtndeletes.addEventListener(str.click, function () {
                                 that.userDelete(elInfo);
                             });
                         }
@@ -67,7 +83,7 @@ export default class UserList {
                         switch (redata['code']) {
                             case 3900:
                                 sessionStorage.removeItem('Token');
-                                var login = new Login();
+                                const login = new Login();
                                 break;
                             case 4004:
                                 this.api.logOut();
@@ -95,8 +111,8 @@ export default class UserList {
 
     userDelete(info: any) {
         console.log('userDelete', info['hash']);
-        var deleteDialog: HTMLDivElement = NyaDom.byId('deleteDialog') as HTMLDivElement;
-        var dialogContent: HTMLDivElement[] = NyaDom.dom('.mdui-dialog-content', deleteDialog) as HTMLDivElement[];
+        const deleteDialog: HTMLDivElement = NyaDom.byId('deleteDialog') as HTMLDivElement;
+        const dialogContent: HTMLDivElement[] = NyaDom.dom('.mdui-dialog-content', deleteDialog) as HTMLDivElement[];
         console.log('dialogContent', dialogContent);
 
         dialogContent.forEach((element) => {
@@ -124,7 +140,7 @@ export default class UserList {
     }
 
     clearScreen() {
-        var tooltips: HTMLDivElement[] = NyaDom.byClass('mdui-tooltip') as HTMLDivElement[];
+        const tooltips: HTMLDivElement[] = NyaDom.byClass('mdui-tooltip') as HTMLDivElement[];
         tooltips.forEach((tt) => {
             tt.remove();
         });
