@@ -80,17 +80,7 @@ export default class UserList {
                             });
                         }
                     } else {
-                        switch (redata['code']) {
-                            case 3900:
-                                sessionStorage.removeItem('Token');
-                                const login = new Login();
-                                break;
-                            case 4004:
-                                this.api.logOut();
-                                break;
-                            default:
-                                break;
-                        }
+                        this.api.errHandle(redata['code']);
                     }
                 }
             },

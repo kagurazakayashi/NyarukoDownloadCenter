@@ -3,18 +3,42 @@ import Login from './login';
 import NyaDom from './nyalib/nyadom';
 import NyaNetwork from './nyalib/nyanetwork';
 import NyaTemplate, { NyaTemplateElement } from './nyalib/nyatemplate';
+import UserList from './userList';
 
 export default class API {
-    
+    jumpPage(run?: () => {}) {
+        let url: string[] = window.location.href.split('/#/');
+        if (url.length == 2) {
+            const token = sessionStorage.getItem('Token');
+            if (token == '' || token == null || token == 'undefined') {
+                let login = new Login();
+            } else {
+                this.getGroupList();
+                switch (url[1]) {
+                    case 'userInfo':
+                        const userFileList = new UserFileList();
+                        break;
+                    default:
+                        const userList = new UserList();
+                        break;
+                }
+            }
+        } else {
+            if (run != null) {
+                run();
+            }else{
+                const userList = new UserList();
+            }
+        }
+    }
 
     getTempHTML(templateHTML: NyaTemplateElement | null, url: string, callback: (isDone: any) => {}) {
         if (!templateHTML || templateHTML.status < 1) {
             NyaTemplate.loadTemplate('dist/' + url + '.html', NyaDom.byClassFirst('container'), (templateElement: NyaTemplateElement) => {
-                templateHTML = templateElement;
                 if (templateElement.status < 1) {
                     return;
                 }
-                callback(true);
+                callback(templateElement);
             });
         } else {
             templateHTML.loadTo(NyaDom.byClassFirst('container'));
@@ -37,27 +61,57 @@ export default class API {
         );
     }
 
+    getGroupList() {
+        NyaNetwork.post(
+            window.g_url + 'groupList/',
+            { t: sessionStorage.getItem('Token') },
+            (data: XMLHttpRequest | null, status: number) => {
+                if (data != null) {
+                    const redata = JSON.parse(data.response);
+                    if (data.status == 200) {
+                        window.g_GroupList = redata['data'];
+                    }
+                }
+            },
+            false
+        );
+    }
+
+    errHandle(errCode: number) {
+        switch (errCode) {
+            case 3900:
+                sessionStorage.removeItem('Token');
+                let login = new Login();
+                break;
+            case 4004:
+                this.logOut();
+                break;
+            default:
+                break;
+        }
+    }
+
     logOut() {
-        var token = sessionStorage.getItem('Token');
+        let token = sessionStorage.getItem('Token');
         if (token == '' || token == null || token == 'undefined') {
             return;
         }
         NyaNetwork.post(window.g_url + 'logout/', { t: token }, (data: XMLHttpRequest | null, status: number) => {
             if (data != null) {
                 sessionStorage.removeItem('Token');
-                var login: Login = new Login();
+                let login: Login = new Login();
             }
         });
     }
 
-    formatTimeStamp(timeStamp: any, format: string) {
+    formatTimeStamp(timeStamp: any, format: string): string {
         if (!timeStamp) {
-            return;
+            return '';
         }
         if (!format) {
             format = 'YYYY-MM-dd';
         }
-        var strDate: any;
+        let strDate: any;
         switch (typeof timeStamp) {
             case 'string':
                 strDate = new Date(timeStamp.replace(/-/g, '/'));
@@ -84,5 +138,6 @@ export default class API {
                 return dict[arguments[0]];
             });
         }
+        return '';
     }
 }

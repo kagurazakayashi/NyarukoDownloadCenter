@@ -3,4 +3,5 @@ declare interface Window {
     g_Dialog: Dialog;
     g_Title:HTMLElement;
     g_PermissionsList:any;
+    g_GroupList:any;
 }

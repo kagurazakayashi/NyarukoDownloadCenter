@@ -1,5 +1,97 @@
 <template>
-    <!-- <link rel="stylesheet" href="dist/login.template.css" /> -->
+    <link rel="stylesheet" href="dist/FileList.template.css" />
     <p>&emsp;</p>
-    
+    <div class="infoTab">
+        <table>
+            <tbody>
+                <tr>
+                    <td>昵称</td>
+                    <td id="nick"></td>
+                </tr>
+                <tr>
+                    <td>用户组</td>
+                    <td id="group"></td>
+                </tr>
+                <tr>
+                    <td>权限</td>
+                    <td id="permissions"></td>
+                </tr>
+                <!-- <tr>
+                <td>语言</td>
+                <td id="locale"></td>
+            </tr> -->
+                <tr>
+                    <td>是否可用</td>
+                    <td id="enable"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="infoTab">
+        <table>
+            <tbody>
+                <tr>
+                    <td>创建时间</td>
+                    <td id="ctime"></td>
+                </tr>
+                <tr>
+                    <td>修改时间</td>
+                    <td id="mtime"></td>
+                </tr>
+                <tr>
+                    <td>封禁开始时间</td>
+                    <td id="disStrTime"></td>
+                </tr>
+                <tr>
+                    <td>封禁结束时间</td>
+                    <td id="disEndTime"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <table class="mdui-table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>文件名</th>
+                <th>描述</th>
+                <th>是否存在</th>
+                <th>创建时间</th>
+                <th>修改时间</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="fileListBody"></tbody>
+    </table>
+</template>
+<template id="row">
+    <tr>
+        <td style="display: none"></td>
+        <td>
+            <button class="mdui-btn mdui-btn-icon ulbtninfo" mdui-tooltip="{content: '管理文件'}">
+                <i class="mdui-icon material-icons">account_circle</i>
+            </button>
+        </td>
+        <td>{{ username }}</td>
+        <td>{{ nickname }}</td>
+        <td>{{ describe }}</td>
+        <td>{{ creation_date }}</td>
+        <td>{{ modification_date }}</td>
+        <td>
+            <button class="mdui-btn mdui-btn-icon ulbtnqr">
+                <i class="mdui-icon material-icons" mdui-tooltip="{content: '创建快捷登录二维码'}">center_focus_weak</i>
+            </button>
+        </td>
+        <td>
+            <button class="mdui-btn mdui-btn-icon ulbtnedit">
+                <i class="mdui-icon material-icons">edit</i>
+            </button>
+        </td>
+        <td>
+            <button class="mdui-btn mdui-btn-icon ulbtndelete" mdui-dialog="{target: '#deleteDialog'}">
+                <i class="mdui-icon material-icons">delete</i>
+            </button>
+        </td>
+    </tr>
 </template>

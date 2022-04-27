@@ -5,8 +5,6 @@ import NyaNetwork from './nyalib/nyanetwork';
 import NyaAs from './nyalib/nyaas';
 import API from './API';
 import UserList from './userList';
-import NyaArgv from './nyalib/nyaargv';
-import UserFileList from './fileList';
 
 export default class Login {
     templateElement: NyaTemplateElement | null = null;
@@ -24,6 +22,7 @@ export default class Login {
             });
         } else {
             this.getUserInfo(token);
+            this.api.getGroupList();
         }
         mdui.mutation();
     }
@@ -74,7 +73,9 @@ export default class Login {
                     if (data != null) {
                         const redata = JSON.parse(data.response);
                         if (data.status == 200) {
+                            sessionStorage.removeItem('info');
                             sessionStorage.setItem('Token', redata.data);
+                            this.api.getGroupList();
                             NyaDom.byClassFirst('container').innerHTML = '';
                             window.g_Dialog.close();
                             this.getUserInfo(redata.data);
@@ -112,7 +113,10 @@ export default class Login {
                         });
                     }
                     if (isTouserList) {
-                        const userList = new UserList();
+                        this.api.jumpPage(() => {
+                            const userList = new UserList();
+                            return true;
+                        });
                     } else {
                         this.api.logOut();
                     }

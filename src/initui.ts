@@ -9,24 +9,14 @@ import UserList from './userList';
 
 export default class InitUI {
     login: Login = new Login();
+    api: API = new API();
 
     constructor() {
-        var api: API = new API();
-        api.getPermissionsList();
-        window.onhashchange = function () {
-            var url: string[] = window.location.href.split('/#/');
-            if (url.length == 2) {
-                switch (url[1]) {
-                    case 'userInfo':
-                        const userFileList = new UserFileList();
-                        break;
-                    default:
-                        const userList = new UserList();
-                        break;
-                }
-            }else{
-                const userList = new UserList();
-            }
+        this.api.getPermissionsList();
+
+        this.api.jumpPage();
+        window.onhashchange = () => {
+            this.api.jumpPage();
         };
         this.meta();
     }
