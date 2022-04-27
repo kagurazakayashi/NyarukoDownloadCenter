@@ -11,7 +11,7 @@ export default class UserFileList {
     userInfo: any = {};
 
     constructor() {
-        let infoStr: string | null = sessionStorage.getItem('info');
+        const infoStr: string | null = sessionStorage.getItem('info');
         let info: any = {};
         if (infoStr == '' || infoStr == null || infoStr == 'undefined') {
             window.history.back();

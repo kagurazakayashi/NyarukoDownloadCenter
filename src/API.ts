@@ -3,11 +3,17 @@ import Login from './login';
 import NyaDom from './nyalib/nyadom';
 import NyaNetwork from './nyalib/nyanetwork';
 import NyaTemplate, { NyaTemplateElement } from './nyalib/nyatemplate';
+import UserEdit from './userEdit';
 import UserList from './userList';
 
 export default class API {
     jumpPage(run?: () => {}) {
-        let url: string[] = window.location.href.split('/#/');
+        const nowurl: string[] = window.location.href.split('?');
+        if (window.g_nowurl == nowurl[0]) {
+            return;
+        }
+        window.g_nowurl = nowurl[0];
+        let url: string[] = nowurl[0].split('/#/');
         if (url.length == 2) {
             const token = sessionStorage.getItem('Token');
             if (token == '' || token == null || token == 'undefined') {
@@ -17,6 +23,9 @@ export default class API {
                 switch (url[1]) {
                     case 'userInfo':
                         const userFileList = new UserFileList();
+                        break;
+                    case 'userEdit':
+                        const userEdit = new UserEdit();
                         break;
                     default:
                         const userList = new UserList();

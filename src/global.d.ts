@@ -1,4 +1,5 @@
 declare interface Window {
+    g_nowurl:any;
     g_url: string;
     g_Dialog: Dialog;
     g_Title:HTMLElement;
