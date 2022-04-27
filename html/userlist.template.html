@@ -20,6 +20,19 @@
             <tbody id="userListBody"></tbody>
         </table>
     </div>
+    <div class="mdui-dialog" id="qrGeneratorDialog">
+        <div class="mdui-dialog-title">请输入用户密码以生成二维码</div>
+        <div class="mdui-dialog-content" id="qrGeneratorDialog-content">
+            <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom">
+                <label class="mdui-textfield-label">密码</label><input class="mdui-textfield-input verifypassword" name="password" type="password" required="" />
+                <div class="mdui-textfield-error">密码不能为空</div>
+            </div>
+        </div>
+        <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+            <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确定</button>
+        </div>
+    </div>
     <div class="mdui-dialog" id="deleteDialog">
         <div class="mdui-dialog-title">是否删除此用户</div>
         <div class="mdui-dialog-content"></div>
@@ -31,7 +44,7 @@
 </template>
 <template id="row">
     <tr>
-        <td style="display:none"></td>
+        <td style="display: none"></td>
         <td>
             <button class="mdui-btn mdui-btn-icon ulbtninfo" mdui-tooltip="{content: '管理文件'}">
                 <i class="mdui-icon material-icons">account_circle</i>
@@ -43,7 +56,7 @@
         <td>{{ creation_date }}</td>
         <td>{{ modification_date }}</td>
         <td>
-            <button class="mdui-btn mdui-btn-icon ulbtnqr">
+            <button class="mdui-btn mdui-btn-icon ulbtnqr" mdui-dialog="{target: '#qrGeneratorDialog'}">
                 <i class="mdui-icon material-icons" mdui-tooltip="{content: '创建快捷登录二维码'}">center_focus_weak</i>
             </button>
         </td>

@@ -10,6 +10,7 @@ export default class UserList {
     templateElement: NyaTemplateElement | null = null;
     api: API = new API();
     confirmDeleteObj: any = null;
+    confirmQRCodeGObj: any = null;
 
     constructor() {
         window.g_Title.innerHTML = '用户列表';
@@ -61,14 +62,19 @@ export default class UserList {
                         });
                         NyaDom.byId('userListBody').innerHTML = tabStr;
                         const btninfos: HTMLButtonElement[] = NyaDom.byClass('ulbtninfo') as HTMLButtonElement[];
+                        const btnqrs: HTMLButtonElement[] = NyaDom.byClass('ulbtnqr') as HTMLButtonElement[];
                         const btnEdits: HTMLButtonElement[] = NyaDom.byClass('ulbtnedit') as HTMLButtonElement[];
                         const btndeletes: HTMLButtonElement[] = NyaDom.byClass('ulbtndelete') as HTMLButtonElement[];
                         for (let i = 0; i < infos.length; i++) {
                             const elInfo: string = infos[i];
-                            const elbtninfo: HTMLButtonElement = btninfos[i];
                             const that = this;
+                            const elbtninfo: HTMLButtonElement = btninfos[i];
                             elbtninfo.addEventListener(str.click, function () {
                                 that.userInfo(elInfo);
+                            });
+                            const elbtnqr: HTMLButtonElement = btnqrs[i];
+                            elbtnqr.addEventListener(str.click, function () {
+                                that.qrcodeGenerator(elInfo);
                             });
                             const elbtnEdit: HTMLButtonElement = btnEdits[i];
                             elbtnEdit.addEventListener(str.click, function () {
@@ -93,6 +99,41 @@ export default class UserList {
         this.clearScreen();
         sessionStorage.setItem('info', JSON.stringify(info));
         window.location.href = '#/userInfo';
+    }
+
+    qrcodeGenerator(info: any) {
+        const qrcondDialog: HTMLDivElement = NyaDom.byId('qrGeneratorDialog') as HTMLDivElement;
+        const dialogContent: HTMLInputElement[] = NyaDom.dom('.verifypassword', qrcondDialog) as HTMLInputElement[];
+        const obj = {
+            hash: info['username'],
+        };
+        const elistener = {
+            hash: '',
+            fuc() {
+                NyaNetwork.post(
+                    window.g_url + 'login/',
+                    {
+                        username: info['username'],
+                        password: dialogContent[0].value,
+                        verify: 1,
+                    },
+                    (data: XMLHttpRequest | null, status: number) => {
+                        if (data != null) {
+                            // const redata = JSON.parse(data.response);
+                            if (data.status === 200) {
+                                //TODO:生成二维码
+                            } else {
+                                alert('密码错误');
+                            }
+                        }
+                    }
+                );
+                console.log('!!!', this.hash);
+            },
+        };
+        qrcondDialog.removeEventListener('confirm', this.confirmQRCodeGObj);
+        this.confirmQRCodeGObj = elistener.fuc.bind(obj);
+        qrcondDialog.addEventListener('confirm', this.confirmQRCodeGObj);
     }
 
     userEdit(info: any) {

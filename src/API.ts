@@ -24,10 +24,13 @@ export default class API {
                 }
             }
         } else {
-            if (run != null) {
-                run();
-            }else{
-                const userList = new UserList();
+            let url: string[] = window.location.href.split('/#');
+            if (url.length != 2) {
+                if (run != null) {
+                    run();
+                } else {
+                    const userList = new UserList();
+                }
             }
         }
     }
