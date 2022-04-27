@@ -1,13 +1,14 @@
 {
-    "name": "nyaruko-login-f",
+    "name": "nyaruko-file-w",
     "version": "1.0.0",
-    "description": "user-system 的前端",
+    "description": "文件共享前端",
     "main": "index.js",
     "scripts": {
         "html": "sh script/html.sh",
         "debug": "sh script/debug.sh",
         "release": "sh script/release.sh",
-        "clean": "sh script/clean.sh"
+        "clean": "sh script/clean.sh",
+        "uplib": "git submodule update --remote"
     },
     "repository": {
         "type": "git",

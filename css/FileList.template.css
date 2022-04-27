@@ -1,8 +1,19 @@
 .infoTab {
     display: inline-block;
     width: 46%;
+    min-width: 320px;
 }
 
-table {
+.infoTab table {
     width: 100%;
+}
+
+.infoTab th {
+    text-align: right;
+    padding-right: 5%;
+}
+
+.infoTab td {
+    text-align: left;
+    padding-left: 5%;
 }

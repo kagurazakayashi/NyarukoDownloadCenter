@@ -33,7 +33,7 @@ export default class API {
                 }
             }
         } else {
-            let url: string[] = window.location.href.split('/#');
+            url = window.location.href.split('/#');
             if (url.length != 2) {
                 if (run != null) {
                     run();

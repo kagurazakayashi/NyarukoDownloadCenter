@@ -5,15 +5,15 @@
         <table>
             <tbody>
                 <tr>
-                    <td>昵称</td>
+                    <th>昵称</th>
                     <td id="nick"></td>
                 </tr>
                 <tr>
-                    <td>用户组</td>
+                    <th>用户组</th>
                     <td id="group"></td>
                 </tr>
                 <tr>
-                    <td>权限</td>
+                    <th>权限</th>
                     <td id="permissions"></td>
                 </tr>
                 <!-- <tr>
@@ -21,7 +21,7 @@
                 <td id="locale"></td>
             </tr> -->
                 <tr>
-                    <td>是否可用</td>
+                    <th>是否可用</th>
                     <td id="enable"></td>
                 </tr>
             </tbody>
@@ -31,63 +31,60 @@
         <table>
             <tbody>
                 <tr>
-                    <td>创建时间</td>
+                    <th>创建时间</th>
                     <td id="ctime"></td>
                 </tr>
                 <tr>
-                    <td>修改时间</td>
+                    <th>修改时间</th>
                     <td id="mtime"></td>
                 </tr>
                 <tr>
-                    <td>封禁开始时间</td>
+                    <th>禁用时间</th>
                     <td id="disStrTime"></td>
                 </tr>
                 <tr>
-                    <td>封禁结束时间</td>
+                    <th>启用时间</th>
                     <td id="disEndTime"></td>
                 </tr>
             </tbody>
         </table>
     </div>
+    <br/>
+    <br/>
     <table class="mdui-table">
         <thead>
             <tr>
                 <th></th>
                 <th>文件名</th>
                 <th>描述</th>
-                <th>是否存在</th>
                 <th>创建时间</th>
                 <th>修改时间</th>
-                <th></th>
                 <th></th>
             </tr>
         </thead>
         <tbody id="fileListBody"></tbody>
     </table>
+    <div class="mdui-dialog" id="deleteDialog">
+        <div class="mdui-dialog-title">是否删除此用户</div>
+        <div class="mdui-dialog-content"></div>
+        <div class="mdui-dialog-actions mdui-dialog-actions-stacked">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确定</button>
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+        </div>
+    </div>
 </template>
 <template id="row">
     <tr>
         <td style="display: none"></td>
         <td>
-            <button class="mdui-btn mdui-btn-icon ulbtninfo" mdui-tooltip="{content: '管理文件'}">
-                <i class="mdui-icon material-icons">account_circle</i>
+            <button class="mdui-btn mdui-btn-icon ulbtninfo">
+                <i class="mdui-icon material-icons">file_download</i>
             </button>
         </td>
-        <td>{{ username }}</td>
-        <td>{{ nickname }}</td>
+        <td {{ namestyle }}>{{ name }}</td>
         <td>{{ describe }}</td>
         <td>{{ creation_date }}</td>
         <td>{{ modification_date }}</td>
-        <td>
-            <button class="mdui-btn mdui-btn-icon ulbtnqr">
-                <i class="mdui-icon material-icons" mdui-tooltip="{content: '创建快捷登录二维码'}">center_focus_weak</i>
-            </button>
-        </td>
-        <td>
-            <button class="mdui-btn mdui-btn-icon ulbtnedit">
-                <i class="mdui-icon material-icons">edit</i>
-            </button>
-        </td>
         <td>
             <button class="mdui-btn mdui-btn-icon ulbtndelete" mdui-dialog="{target: '#deleteDialog'}">
                 <i class="mdui-icon material-icons">delete</i>
