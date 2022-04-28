@@ -11,6 +11,7 @@ export default class Login {
     api: API = new API();
 
     constructor() {
+        console.log('Login');
         window.g_Title = NyaDom.byClassFirst('mdui-typo-title');
         window.g_Title.innerHTML = '登录';
         const token = sessionStorage.getItem('Token');
@@ -55,7 +56,7 @@ export default class Login {
             } = { username: '', password: '', isScan: 1 };
             linputs.forEach((element) => {
                 switch (element.name) {
-                    case 'name':
+                    case this.api.str.name:
                         netjson.username = element.value;
                         break;
                     case 'password':
@@ -113,6 +114,7 @@ export default class Login {
                         });
                     }
                     if (isTouserList) {
+                        console.log('!!!!!');
                         this.api.jumpPage(() => {
                             const userList = new UserList();
                             return true;

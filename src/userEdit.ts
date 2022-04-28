@@ -11,7 +11,7 @@ export default class UserEdit {
     confirmQRCodeGObj: any = null;
 
     constructor() {
-        window.g_Title.innerHTML = '用户列表';
+        console.log('UserEdit');
         const infoStr: string | null = sessionStorage.getItem('info');
         let info: any = {};
         if (infoStr == '' || infoStr == null || infoStr == 'undefined') {
@@ -40,7 +40,7 @@ export default class UserEdit {
                                 if (Object.prototype.hasOwnProperty.call(window.g_GroupList, key)) {
                                     const element = window.g_GroupList[key];
 
-                                    select.innerHTML += '<option value="' + key + '"' + (info['group_code'] == key ? ' selected' : '') + '>' + element['name'] + '</option>';
+                                    select.innerHTML += '<option value="' + key + '"' + (info['group_code'] == key ? ' selected' : '') + '>' + element[this.api.str.name] + '</option>';
                                 }
                             }
                             break;
@@ -50,7 +50,7 @@ export default class UserEdit {
                                 if (Object.prototype.hasOwnProperty.call(window.g_PermissionsList, key)) {
                                     const element = window.g_PermissionsList[key];
 
-                                    select.innerHTML += '<option value="' + key + '"' + (info['permissions_id'] == key ? ' selected' : '') + '>' + element['describe'] + '</option>';
+                                    select.innerHTML += '<option value="' + key + '"' + (info['permissions_id'] == key ? ' selected' : '') + '>' + element[this.api.str.describe] + '</option>';
                                 }
                             }
                             break;

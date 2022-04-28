@@ -7,9 +7,21 @@ import UserEdit from './userEdit';
 import UserList from './userList';
 
 export default class API {
+    str: any = {
+        date: 'YYYY-MM-dd HH:mm:ss',
+        hash: 'hash',
+        name: 'name',
+        username: 'nickname',
+        nickname: 'username',
+        describe: 'describe',
+        creation_date: 'creation_date',
+        modification_date: 'modification_date',
+        click: 'click',
+    };
+
     jumpPage(run?: () => {}) {
         const nowurl: string[] = window.location.href.split('?');
-        if (window.g_nowurl == nowurl[0]) {
+        if (nowurl.length > 1 && window.g_nowurl == nowurl[0]) {
             return;
         }
         window.g_nowurl = nowurl[0];
@@ -100,6 +112,28 @@ export default class API {
                 break;
             default:
                 break;
+        }
+    }
+
+    netWork(url: string, data: any, isToken: boolean = true, callback?: (cb: XMLHttpRequest | null) => void, isblob: boolean = false) {
+        const token = sessionStorage.getItem('Token');
+        if (token == '' || token == null || token == 'undefined') {
+            let login = new Login();
+        } else {
+            if (isToken) {
+                data['t'] = token;
+                console.log(data);
+            }
+            console.log(isblob);
+            NyaNetwork.post(
+                url,
+                data,
+                (msg: XMLHttpRequest | null, status: number) => {
+                    if (callback) callback(msg);
+                },
+                true,
+                isblob
+            );
         }
     }
 

@@ -30,15 +30,6 @@ export default class UserList {
     }
 
     getUserList(t: string) {
-        const str = {
-            date: 'YYYY-MM-dd HH:mm:ss',
-            username: 'nickname',
-            nickname: 'username',
-            describe: 'describe',
-            creation_date: 'creation_date',
-            modification_date: 'modification_date',
-            click: 'click',
-        };
         NyaNetwork.post(
             window.g_url + 'userList/',
             { t: t, enable: 2 },
@@ -50,14 +41,14 @@ export default class UserList {
                         let tabStr: string = '';
                         const infos: any[] = [];
                         redata['data'].forEach((ele: any) => {
-                            const creationDate = ele[str.creation_date] > 0 ? this.api.formatTimeStamp(ele[str.creation_date] * 1000, str.date) : '';
-                            const modificationDate = ele[str.modification_date] > 0 ? this.api.formatTimeStamp(ele[str.modification_date] * 1000, str.date) : '';
+                            const creationDate = ele[this.api.str.creation_date] > 0 ? this.api.formatTimeStamp(ele[this.api.str.creation_date] * 1000, this.api.str.date) : '';
+                            const modificationDate = ele[this.api.str.modification_date] > 0 ? this.api.formatTimeStamp(ele[this.api.str.modification_date] * 1000, this.api.str.date) : '';
                             tabStr += this.templateElement?.codeByID('row', [
-                                [str.username, ele[str.username]],
-                                [str.nickname, ele[str.nickname]],
-                                [str.describe, window.g_PermissionsList[String(ele['permissions_id'])][str.describe]],
-                                [str.creation_date, creationDate],
-                                [str.modification_date, modificationDate],
+                                [this.api.str.username, ele[this.api.str.username]],
+                                [this.api.str.nickname, ele[this.api.str.nickname]],
+                                [this.api.str.describe, window.g_PermissionsList[String(ele['permissions_id'])][this.api.str.describe]],
+                                [this.api.str.creation_date, creationDate],
+                                [this.api.str.modification_date, modificationDate],
                             ]);
                             infos.push(ele);
                         });
@@ -70,19 +61,19 @@ export default class UserList {
                             const elInfo: string = infos[i];
                             const that = this;
                             const elbtninfo: HTMLButtonElement = btninfos[i];
-                            elbtninfo.addEventListener(str.click, function () {
+                            elbtninfo.addEventListener(this.api.str.click, function () {
                                 that.userInfo(elInfo);
                             });
                             const elbtnqr: HTMLButtonElement = btnqrs[i];
-                            elbtnqr.addEventListener(str.click, function () {
+                            elbtnqr.addEventListener(this.api.str.click, function () {
                                 that.qrcodeGenerator(elInfo);
                             });
                             const elbtnEdit: HTMLButtonElement = btnEdits[i];
-                            elbtnEdit.addEventListener(str.click, function () {
+                            elbtnEdit.addEventListener(this.api.str.click, function () {
                                 that.userEdit(elInfo);
                             });
                             const elbtndeletes: HTMLButtonElement = btndeletes[i];
-                            elbtndeletes.addEventListener(str.click, function () {
+                            elbtndeletes.addEventListener(this.api.str.click, function () {
                                 that.userDelete(elInfo);
                             });
                         }
