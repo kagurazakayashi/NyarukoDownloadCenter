@@ -40,7 +40,7 @@ export default class UserList {
         };
         NyaNetwork.post(
             window.g_url + 'userList/',
-            { t: t },
+            { t: t, enable: 2 },
             (data: XMLHttpRequest | null, status: number) => {
                 if (data != null) {
                     const redata = JSON.parse(data.response);

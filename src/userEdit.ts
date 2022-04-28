@@ -59,7 +59,10 @@ export default class UserEdit {
                             break;
                     }
                 });
-
+                const enableStr: HTMLDivElement = NyaDom.byId('enableStr') as HTMLDivElement;
+                enableStr.onclick = function () {
+                    console.log('onclick');
+                };
                 const editDialog: HTMLButtonElement = NyaDom.byId('Dialog') as HTMLButtonElement;
                 editDialog.addEventListener('confirm', () => {
                     //TODO:连接修改端口
