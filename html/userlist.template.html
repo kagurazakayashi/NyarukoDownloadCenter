@@ -1,5 +1,5 @@
 <template>
-    <!-- <link rel="stylesheet" href="dist/login.template.css" /> -->
+    <link rel="stylesheet" href="dist/userlist.template.css" />
     <p>&emsp;</p>
     <div class="mdui-table-fluid">
         <table class="mdui-table">
@@ -39,6 +39,17 @@
         <div class="mdui-dialog-actions mdui-dialog-actions-stacked">
             <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确定</button>
             <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+        </div>
+    </div>
+    <div class="mdui-dialog" id="qrDialog">
+        <div class="mdui-dialog-title">快捷提取文件列表二维码</div>
+        <div class="mdui-dialog-content">
+            <div>该二维码包含用户名和密码以自动登录，请勿将私有账户的二维码共享。</div>
+            <div id="qrcode"></div>
+        </div>
+        <div class="mdui-dialog-actions mdui-dialog-actions-stacked">
+            <a class="mdui-btn mdui-ripple" id="qrCodeDL" mdui-dialog-confirm>下载二维码图片</a>
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>返回</button>
         </div>
     </div>
 </template>

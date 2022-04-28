@@ -1,0 +1,11 @@
+#qrcode {
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+}
+
+#qrcode svg {
+    display: inline-block;
+    width: 320px;
+    height: 320px;
+}

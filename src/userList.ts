@@ -5,6 +5,7 @@ import Login from './login';
 import NyaDom from './nyalib/nyadom';
 import NyaNetwork from './nyalib/nyanetwork';
 import { NyaTemplateElement } from './nyalib/nyatemplate';
+import QRCode from 'qrcode-generator';
 
 export default class UserList {
     templateElement: NyaTemplateElement | null = null;
@@ -104,31 +105,48 @@ export default class UserList {
     qrcodeGenerator(info: any) {
         const qrcondDialog: HTMLDivElement = NyaDom.byId('qrGeneratorDialog') as HTMLDivElement;
         const dialogContent: HTMLInputElement[] = NyaDom.dom('.verifypassword', qrcondDialog) as HTMLInputElement[];
+        const username: string = info['username'];
         const obj = {
-            hash: info['username'],
+            hash: username,
         };
         const elistener = {
             hash: '',
             fuc() {
+                const password: string = dialogContent[0].value;
                 NyaNetwork.post(
                     window.g_url + 'login/',
                     {
-                        username: info['username'],
-                        password: dialogContent[0].value,
+                        username: username,
+                        password: password,
                         verify: 1,
                     },
                     (data: XMLHttpRequest | null, status: number) => {
                         if (data != null) {
-                            // const redata = JSON.parse(data.response);
                             if (data.status === 200) {
-                                //TODO:生成二维码
+                                setTimeout(() => {
+                                    const url = window.g_url + '#a=qlogin&u=' + username + '&p=' + password;
+                                    const qr: QRCode = QRCode(5, 'L');
+                                    qr.addData(url, 'Byte');
+                                    qr.make();
+                                    const qrData: string = qr.createSvgTag();
+                                    const qrcodeBox: HTMLDivElement = NyaDom.byId('qrcode') as HTMLDivElement;
+                                    qrcodeBox.innerHTML = qrData;
+                                    const qrCodeDL: HTMLAnchorElement = NyaDom.byId('qrCodeDL') as HTMLAnchorElement;
+                                    qrCodeDL.href = qr.createDataURL();
+                                    qrCodeDL.download = 'qr_' + username + '.gif';
+                                    const qrDialog = new mdui.Dialog(NyaDom.byId('qrDialog'), {
+                                        history: false,
+                                    });
+                                    qrDialog.open();
+                                }, 100);
                             } else {
-                                alert('密码错误');
+                                mdui.alert('密码错误', username, undefined, {
+                                    history: false,
+                                });
                             }
                         }
                     }
                 );
-                console.log('!!!', this.hash);
             },
         };
         qrcondDialog.removeEventListener('confirm', this.confirmQRCodeGObj);

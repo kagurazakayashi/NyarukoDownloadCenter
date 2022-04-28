@@ -43,6 +43,7 @@
         "gulp-uglify": "^3.0.2",
         "mdui": "^1.0.2",
         "purecss": "^2.0.6",
+        "qrcode-generator": "^1.4.4",
         "ts-loader": "^9.1.1"
     }
 }
