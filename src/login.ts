@@ -47,7 +47,7 @@ export default class Login {
 
     buttonOnClick() {
         const btnLogin = NyaDom.byId('btnLogin');
-        btnLogin.addEventListener('click', () => {
+        btnLogin.addEventListener(this.api.str.click, () => {
             const linputs: HTMLInputElement[] = NyaDom.byClass('loginInput') as HTMLInputElement[];
             var netjson: {
                 username: string;
@@ -67,64 +67,55 @@ export default class Login {
                         break;
                 }
             });
-            NyaNetwork.post(
-                window.g_url + 'login/',
-                netjson,
-                (data: XMLHttpRequest | null, status: number) => {
-                    if (data != null) {
-                        const redata = JSON.parse(data.response);
-                        if (data.status == 200) {
-                            sessionStorage.removeItem('info');
-                            sessionStorage.setItem('Token', redata.data);
-                            this.api.getGroupList();
-                            NyaDom.byClassFirst('container').innerHTML = '';
-                            window.g_Dialog.close();
-                            this.getUserInfo(redata.data);
-                        } else {
-                            alert(data.responseText);
-                        }
+            this.api.netWork(window.g_url + 'login/', netjson, false, (data) => {
+                console.log(data);
+                if (data != null) {
+                    const redata = JSON.parse(data.response);
+                    if (data.status == 200) {
+                        sessionStorage.removeItem('info');
+                        sessionStorage.setItem('Token', redata.data);
+                        this.api.getGroupList();
+                        NyaDom.byClassFirst('container').innerHTML = '';
+                        window.g_Dialog.close();
+                        this.getUserInfo(redata.data);
+                    } else {
+                        alert(data.responseText);
                     }
-                },
-                false
-            );
+                }
+            });
         });
     }
 
     getUserInfo(token: string) {
-        NyaNetwork.post(
-            window.g_url + 'userInfo/',
-            { t: token },
-            (data: XMLHttpRequest | null, status: number) => {
-                if (data != null) {
-                    var isTouserList = true;
-                    if (data.status == 200) {
-                        var userInfo = JSON.parse(data.response)['data'];
-                        var permission = JSON.parse(userInfo['permissions']);
-                        if (permission['id'] != 1) {
-                            isTouserList = false;
-                            console.log(data.responseText);
-                            alert('此用户没有权限');
-                        }
-                    } else {
+        this.api.netWork(window.g_url + 'userInfo/', {}, true, (data) => {
+            if (data != null) {
+                var isTouserList = true;
+                if (data.status == 200) {
+                    var userInfo = JSON.parse(data.response)['data'];
+                    var permission = JSON.parse(userInfo['permissions']);
+                    if (permission['id'] != 1) {
                         isTouserList = false;
-                        this.api.getTempHTML(this.templateElement, 'login.template', () => {
-                            this.loginDialog();
-                            this.buttonOnClick();
-                            return true;
-                        });
+                        console.log(data.responseText);
+                        alert('此用户没有权限');
                     }
-                    if (isTouserList) {
-                        console.log('!!!!!');
-                        this.api.jumpPage(() => {
-                            const userList = new UserList();
-                            return true;
-                        });
-                    } else {
-                        this.api.logOut();
-                    }
+                } else {
+                    isTouserList = false;
+                    this.api.getTempHTML(this.templateElement, 'login.template', () => {
+                        this.loginDialog();
+                        this.buttonOnClick();
+                        return true;
+                    });
                 }
-            },
-            false
-        );
+                if (isTouserList) {
+                    console.log('!!!!!');
+                    this.api.jumpPage(() => {
+                        const userList = new UserList();
+                        return true;
+                    });
+                } else {
+                    this.api.logOut();
+                }
+            }
+        });
     }
 }

@@ -49,8 +49,8 @@
             </tbody>
         </table>
     </div>
-    <br/>
-    <br/>
+    <br />
+    <br />
     <table class="mdui-table">
         <thead>
             <tr>
@@ -67,6 +67,19 @@
     <div class="mdui-dialog" id="deleteDialog">
         <div class="mdui-dialog-title">是否删除此用户</div>
         <div class="mdui-dialog-content"></div>
+        <div class="mdui-dialog-actions mdui-dialog-actions-stacked">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确定</button>
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+        </div>
+    </div>
+    <button class="mdui-fab mdui-color-theme-accent mdui-ripple mdui-fab-fixed" id="btnFileUpload" mdui-dialog="{target: '#fileUploadDialog'}">
+        <i class="mdui-icon material-icons">file_upload</i>
+    </button>
+    <div class="mdui-dialog" id="fileUploadDialog">
+        <div class="mdui-dialog-title">上传文件</div>
+        <div class="mdui-dialog-content">
+            <input type="file" name="file" id="fuDialogFile">
+        </div>
         <div class="mdui-dialog-actions mdui-dialog-actions-stacked">
             <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确定</button>
             <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>

@@ -18,22 +18,19 @@ export default class UserList {
         // sessionStorage.removeItem('info');
         this.api.getTempHTML(this.templateElement, 'userlist.template', (templateElement) => {
             this.templateElement = templateElement;
-            const token = sessionStorage.getItem('Token');
-            if (token == '' || token == null || token == 'undefined') {
-                const login = new Login();
-            } else {
-                this.getUserList(token);
-            }
+            this.getUserList();
+
             return true;
         });
         mdui.mutation();
     }
 
-    getUserList(t: string) {
-        NyaNetwork.post(
+    getUserList() {
+        this.api.netWork(
             window.g_url + 'userList/',
-            { t: t, enable: 2 },
-            (data: XMLHttpRequest | null, status: number) => {
+            { enable: 1 },
+            true,
+            (data) => {
                 if (data != null) {
                     const redata = JSON.parse(data.response);
                     if (data.status == 200) {
@@ -97,6 +94,7 @@ export default class UserList {
         const qrcondDialog: HTMLDivElement = NyaDom.byId('qrGeneratorDialog') as HTMLDivElement;
         const dialogContent: HTMLInputElement[] = NyaDom.dom('.verifypassword', qrcondDialog) as HTMLInputElement[];
         const username: string = info['username'];
+        const that = this;
         const obj = {
             hash: username,
         };
@@ -104,14 +102,15 @@ export default class UserList {
             hash: '',
             fuc() {
                 const password: string = dialogContent[0].value;
-                NyaNetwork.post(
+                that.api.netWork(
                     window.g_url + 'login/',
                     {
                         username: username,
                         password: password,
                         verify: 1,
                     },
-                    (data: XMLHttpRequest | null, status: number) => {
+                    false,
+                    (data) => {
                         if (data != null) {
                             if (data.status === 200) {
                                 setTimeout(() => {
@@ -158,22 +157,27 @@ export default class UserList {
         console.log('dialogContent', dialogContent);
 
         dialogContent.forEach((element) => {
-            element.innerHTML = '是否删除用户：' + info['username'] + ' ?';
+            element.innerHTML = '是否删除用户：' + info[this.api.str.username] + ' ?';
         });
 
+        const that = this;
         const obj = {
-            hash: info['hash'],
+            hash: info[this.api.str.hash],
         };
         const elistener = {
             hash: '',
             fuc() {
-                // NyaNetwork.post(window.g_url + 'userList/', { t: this.hash }, (data: XMLHttpRequest | null, status: number) => {
-                //     if (data != null) {
-                //         const redata = JSON.parse(data.response);
-                //         alert(redata);
-                //     }
-                // });
-                console.log('!!!', this.hash);
+                that.api.netWork(window.g_url + 'userDelete/', { h: this.hash }, true, (data) => {
+                    if (data != null) {
+                        const redata = JSON.parse(data.response);
+                        console.log(' redata ', data.response);
+                        if (data.status === 200) {
+                            //TODO:成功
+                        } else {
+                            alert(redata.msg);
+                        }
+                    }
+                });
             },
         };
         deleteDialog.removeEventListener('confirm', this.confirmDeleteObj);

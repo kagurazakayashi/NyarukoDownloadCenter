@@ -11,8 +11,8 @@ export default class API {
         date: 'YYYY-MM-dd HH:mm:ss',
         hash: 'hash',
         name: 'name',
-        username: 'nickname',
-        nickname: 'username',
+        username: 'username',
+        nickname: 'nickname',
         describe: 'describe',
         creation_date: 'creation_date',
         modification_date: 'modification_date',
@@ -115,9 +115,9 @@ export default class API {
         }
     }
 
-    netWork(url: string, data: any, isToken: boolean = true, callback?: (cb: XMLHttpRequest | null) => void, isblob: boolean = false) {
+    netWork(url: string, data: any, isToken: boolean = true, callback?: (cb: XMLHttpRequest | null) => void, isblob: boolean = false, isupload: boolean = false) {
         const token = sessionStorage.getItem('Token');
-        if (token == '' || token == null || token == 'undefined') {
+        if (isToken && (token == '' || token == null || token == 'undefined')) {
             let login = new Login();
         } else {
             if (isToken) {
@@ -132,7 +132,8 @@ export default class API {
                     if (callback) callback(msg);
                 },
                 true,
-                isblob
+                isblob,
+                isupload
             );
         }
     }

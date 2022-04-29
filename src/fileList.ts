@@ -12,6 +12,7 @@ export default class UserFileList {
     api: API = new API();
     userInfo: any = {};
     filelist: any[] = [];
+    confirmDeleteObj: any = null;
 
     constructor() {
         console.log('UserFileList');
@@ -47,12 +48,21 @@ export default class UserFileList {
                 NyaDom.byId('disEndTime').innerText = ctime;
                 this.getFileList(token);
 
-                let btnDownloads = NyaDom.byClass('flbtnDownload');
+                const btnDownloads = NyaDom.byClass('flbtnDownload');
+                const btnDeletes = NyaDom.byClass('flbtnDelete');
                 for (let i = 0; i < this.filelist.length; i++) {
+                    const file = this.filelist[i];
                     btnDownloads[i].addEventListener(this.api.str.click, () => {
-                        this.downLoad(this.filelist[i]);
+                        this.downLoad(file);
+                    });
+                    btnDeletes[i].addEventListener(this.api.str.click, () => {
+                        this.deleteFile(file);
                     });
                 }
+                const btnfileUpload = NyaDom.byId('btnFileUpload');
+                btnfileUpload.addEventListener(this.api.str.click, () => {
+                    this.fileUP();
+                });
             }
             return true;
         });
@@ -65,27 +75,25 @@ export default class UserFileList {
             t: t,
             uhash: this.userInfo['hash'],
         };
-        NyaNetwork.post(
-            url,
-            arg,
-            (data: XMLHttpRequest | null, status: number) => {
-                if (data != null) {
-                    let redata: any = JSON.parse(data.response);
-                    if (data.status == 200) {
-                        this.genFileList(redata.data);
-                    } else {
-                        this.api.errHandle(redata['code']);
-                    }
+        this.api.netWork(url, arg, true, (data) => {
+            if (data != null) {
+                let redata: any = JSON.parse(data.response);
+                if (data.status == 200) {
+                    this.genFileList(redata.data);
                 } else {
-                    console.error(status, url, arg, data);
+                    this.api.errHandle(redata['code']);
                 }
-            },
-            false
-        );
+            } else {
+                console.error(status, url, arg, data);
+            }
+        });
     }
 
     genFileList(data: any[]) {
         let html: string = '';
+        if (data == null || data.length <= 0) {
+            return;
+        }
         for (const item of data) {
             const namestyle = 'style="color: ' + (item.exist == 1 ? 'black' : 'gray; text-decoration:line-through') + ';"';
             html += this.templateElement?.codeByID('row', [
@@ -143,7 +151,99 @@ export default class UserFileList {
             true
         );
     }
-    deleteFile(fhash: string) {
-        
+
+    deleteFile(info: any) {
+        const deleteDialog: HTMLDivElement = NyaDom.byId('deleteDialog') as HTMLDivElement;
+        const dialogContent: HTMLDivElement[] = NyaDom.dom('.mdui-dialog-content', deleteDialog) as HTMLDivElement[];
+        console.log('dialogContent', dialogContent);
+
+        dialogContent.forEach((element) => {
+            element.innerHTML = '是否删除文件：' + info[this.api.str.name] + ' ?';
+        });
+
+        const that = this;
+        const obj = {
+            uhash: this.userInfo[this.api.str.hash],
+            fh: info[this.api.str.hash],
+        };
+        const elistener = {
+            uhash: '',
+            fh: '',
+            fuc() {
+                that.api.netWork(window.g_url + 'fileDelete/', { uhash: this.uhash, fh: this.fh }, true, (data) => {
+                    if (data != null) {
+                        const redata = JSON.parse(data.response);
+                        if (data.status === 200) {
+                            //TODO:成功
+                        } else {
+                            alert(redata.msg);
+                        }
+                    }
+                });
+                console.log('!!!', this.uhash, '\r\n', this.fh);
+            },
+        };
+        deleteDialog.removeEventListener('confirm', this.confirmDeleteObj);
+        this.confirmDeleteObj = elistener.fuc.bind(obj);
+        deleteDialog.addEventListener('confirm', this.confirmDeleteObj);
+    }
+
+    fileUP() {
+        const inputF: HTMLInputElement = NyaDom.byId('fuDialogFile') as HTMLInputElement;
+        const fileUploadDialog: HTMLDivElement = NyaDom.byId('fileUploadDialog') as HTMLDivElement;
+        // const btnConfirm: HTMLButtonElement = NyaDom.dom('.mdui-btn', fileUploadDialog, true) as HTMLButtonElement;
+        console.log(new Date().valueOf());
+        const that = this;
+        const obj = {
+            uhash: this.userInfo[this.api.str.hash],
+        };
+        const elistener = {
+            uhash: '',
+            fuc() {
+                const files: FileList | null = inputF.files;
+                if (files != null && files.length > 0) {
+                    // const xhr: XMLHttpRequest = new XMLHttpRequest();
+                    // xhr.open('post', window.g_url + 'fileUpdata/', true);
+                    // xhr.onload = function () {
+                    //     // this.log(`请求网址 ${url} 成功，返回数据 ${this.responseText}`, this.nyaLibName);
+                    //     console.log(this);
+                    // };
+                    // xhr.onerror = function () {
+                    //     // this.log(`请求网址 ${url} 失败，返回状态码 ${this.status}`, this.nyaLibName, -2);
+                    //     console.log(this);
+                    // };
+
+                    // xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                    // xhr.setRequestHeader('Content-Type', 'multipart/form-data');
+                    // const token = sessionStorage.getItem('Token');
+                    // const dataStr: any = { uhash: this.uhash, t: token, f: files.item(0) };
+                    // xhr.send(dataStr);
+
+                    that.api.netWork(
+                        window.g_url + 'fileUpdata/',
+                        { uhash: this.uhash, f: files.item(0) },
+                        true,
+                        (data) => {
+                            if (data != null) {
+                                const redata = JSON.parse(data.response);
+                                console.log(redata);
+                                if (data.status === 200) {
+                                    //TODO:成功
+                                } else {
+                                    alert(redata.msg);
+                                }
+                            }
+                        },
+                        false,
+                        false
+                    );
+                } else {
+                    alert('没有选择文件');
+                }
+            },
+        };
+        fileUploadDialog.removeEventListener('confirm', this.confirmDeleteObj);
+        this.confirmDeleteObj = elistener.fuc.bind(obj);
+        fileUploadDialog.addEventListener('confirm', this.confirmDeleteObj);
     }
 }
