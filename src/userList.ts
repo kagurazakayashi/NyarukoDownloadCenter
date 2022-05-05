@@ -103,7 +103,7 @@ export default class UserList {
         console.log('userInfo', info);
         this.clearScreen();
         sessionStorage.setItem('info', JSON.stringify(info));
-        window.location.href = '#/userInfo';
+        this.api.urlhref('#/userInfo');
     }
 
     qrcodeGenerator(info: any) {
@@ -163,7 +163,7 @@ export default class UserList {
     userEdit(info: any) {
         console.log('userEdit', info['hash']);
         sessionStorage.setItem('info', JSON.stringify(info));
-        window.location.href = '#/userEdit';
+        this.api.urlhref('#/userEdit');
     }
 
     userDelete(info: any) {

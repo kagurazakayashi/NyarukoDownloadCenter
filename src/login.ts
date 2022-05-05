@@ -12,6 +12,7 @@ export default class Login {
 
     constructor() {
         console.log('Login');
+        window.g_nowurl = 'Login';
         window.g_Title = NyaDom.byClassFirst('mdui-typo-title');
         window.g_Title.innerHTML = '登录';
         const token = sessionStorage.getItem('Token');

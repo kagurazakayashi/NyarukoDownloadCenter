@@ -19,18 +19,32 @@ export default class API {
         click: 'click',
     };
 
+    urlhref(toPage: string) {
+        const nowurl: string[] = window.location.href.split('?');
+        if (nowurl.length > 1) {
+            window.location.href = nowurl[0] + toPage; //+ '?' + nowurl[1];
+        } else {
+            window.location.href = toPage;
+        }
+    }
+
     jumpPage(run?: () => {}) {
         const nowurl: string[] = window.location.href.split('?');
         if (nowurl.length > 1 && window.g_nowurl == nowurl[0]) {
+            console.log(' 111 ');
             return;
         }
+        console.log(' 222 ');
         window.g_nowurl = nowurl[0];
         let url: string[] = nowurl[0].split('/#/');
         if (url.length == 2) {
+            console.log(' 333 ');
             const token = sessionStorage.getItem('Token');
             if (token == '' || token == null || token == 'undefined') {
                 let login = new Login();
+                console.log(' 444 ');
             } else {
+                console.log(' 555 ');
                 this.getGroupList();
                 switch (url[1]) {
                     case 'userInfo':
@@ -45,11 +59,15 @@ export default class API {
                 }
             }
         } else {
+            console.log(' 666 ');
             url = window.location.href.split('/#');
             if (url.length != 2) {
+                console.log(' 777 ');
                 if (run != null) {
+                    console.log(' 888 ');
                     run();
                 } else {
+                    console.log(' 999 ');
                     const userList = new UserList();
                 }
             }
@@ -132,8 +150,7 @@ export default class API {
                     if (callback) callback(msg);
                 },
                 true,
-                isblob,
-                isupload
+                isblob
             );
         }
     }
