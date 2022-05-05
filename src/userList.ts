@@ -26,9 +26,25 @@ export default class UserList {
     }
 
     getUserList() {
+        let arg = {
+            enable: 1,
+        };
+        const nowurl: string[] = window.location.href.split('?');
+        if (nowurl.length > 1) {
+            const params = new URLSearchParams(nowurl[1]);
+            const enable = params.get('enable');
+            if (enable != null) {
+                try {
+                    const enableNumber = Number(enable);
+                    if (0 <= enableNumber && enableNumber <= 2) {
+                        arg.enable = enableNumber;
+                    }
+                } catch (error) {}
+            }
+        }
         this.api.netWork(
             window.g_url + 'userList/',
-            { enable: 1 },
+            arg,
             true,
             (data) => {
                 if (data != null) {
