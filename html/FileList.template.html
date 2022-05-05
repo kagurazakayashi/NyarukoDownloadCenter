@@ -67,12 +67,12 @@
     <div class="mdui-dialog" id="deleteDialog">
         <div class="mdui-dialog-title">是否删除此文件</div>
         <div class="mdui-dialog-content"></div>
-        <div class="mdui-dialog-actions mdui-dialog-actions-stacked">
-            <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确定</button>
+        <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确认删除</button>
             <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
         </div>
     </div>
-    <button class="mdui-fab mdui-color-theme-accent mdui-ripple mdui-fab-fixed" id="btnFileUpload" mdui-dialog="{target: '#fileUploadDialog'}">
+    <button class="mdui-fab mdui-color-theme-accent mdui-ripple mdui-fab-fixed" id="btnFileUpload">
         <i class="mdui-icon material-icons">file_upload</i>
     </button>
     <div class="mdui-dialog" id="fileUploadDialog">
@@ -80,9 +80,13 @@
         <div class="mdui-dialog-content">
             <input type="file" name="file" id="fuDialogFile">
         </div>
-        <div class="mdui-dialog-actions mdui-dialog-actions-stacked">
-            <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确定</button>
-            <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+        <div class="mdui-progress">
+            <div id="ulProg" class="none"></div>
+        </div>
+        <div id="ulProgT" class="mdui-text-color-theme"></div>
+        <div class="mdui-dialog-actions">
+            <button id="ulProgOK" class="mdui-btn mdui-ripple" mdui-dialog-confirm>开始上传</button>
+            <button class="mdui-btn mdui-ripple" mdui-dialog-cancel>取消</button>
         </div>
     </div>
 </template>

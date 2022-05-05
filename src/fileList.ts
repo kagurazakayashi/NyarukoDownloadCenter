@@ -1,7 +1,9 @@
 import mdui from 'mdui';
 import API from './API';
 import Login from './login';
+import NyaAs from './nyalib/nyaas';
 import NyaDom from './nyalib/nyadom';
+import NyaEvent from './nyalib/nyaevent';
 import NyaNetwork from './nyalib/nyanetwork';
 import NyaStrings from './nyalib/nyastrings';
 import { NyaTemplateElement } from './nyalib/nyatemplate';
@@ -12,6 +14,9 @@ export default class UserFileList {
     api: API = new API();
     userInfo: any = {};
     confirmDeleteObj: any = null;
+    ulProg: HTMLDivElement | null = null;
+    ulProgT: HTMLDivElement | null = null;
+    netUpload: XMLHttpRequest | null = null;
 
     constructor() {
         console.log('UserFileList');
@@ -98,16 +103,15 @@ export default class UserFileList {
             const file = filelist[i];
             const btnDL: HTMLButtonElement = btnDownloads[i];
             const btnDel: HTMLButtonElement = btnDeletes[i];
-            btnDL.addEventListener(this.api.str.click, () => {
+            NyaEvent.addEventListener(btnDL,this.api.str.click, () => {
                 this.downLoad(file);
             });
-            btnDel.addEventListener(this.api.str.click, () => {
+            NyaEvent.addEventListener(btnDel,this.api.str.click, () => {
                 this.deleteFile(file);
             });
         }
-        const btnfileUpload = NyaDom.byId('btnFileUpload');
-        btnfileUpload.addEventListener(this.api.str.click, () => {
-            this.fileUP();
+        NyaEvent.addEventListener(NyaDom.byId('btnFileUpload'),this.api.str.click, () => {
+            this.fileUploadUI();
         });
     }
 
@@ -188,68 +192,99 @@ export default class UserFileList {
         deleteDialog.addEventListener('confirm', this.confirmDeleteObj);
     }
 
-    fileUP() {
-        const inputF: HTMLInputElement = NyaDom.byId('fuDialogFile') as HTMLInputElement;
-        const fileUploadDialog: HTMLDivElement = NyaDom.byId('fileUploadDialog') as HTMLDivElement;
-        const that = this;
-        const obj = {
-            uhash: this.userInfo[this.api.str.hash],
-        };
-        const elistener = {
-            uhash: '',
-            fuc() {
-                const files: FileList | null = inputF.files;
-                if (files != null && files.length > 0) {
-                    const xhr: XMLHttpRequest = new XMLHttpRequest();
-                    xhr.open('post', window.g_url + 'fileUpdata/', true);
-                    xhr.onload = function () {
-                        // this.log(`请求网址 ${url} 成功，返回数据 ${this.responseText}`, this.nyaLibName);
-                        console.log(this);
-                    };
-                    xhr.onerror = function () {
-                        // this.log(`请求网址 ${url} 失败，返回状态码 ${this.status}`, this.nyaLibName, -2);
-                        console.log(this);
-                    };
-
-                    // xhr.setRequestHeader('Content-Type', 'multipart/form-data');
-                    const token = sessionStorage.getItem('Token');
-                    let formData = new FormData();
-                    const file = files.item(0);
-                    file?.arrayBuffer;
-                    const fileblob: Blob = new Blob();
-                    if (file == null || token == null) {
+    fileUploadUI() {
+        if (this.ulProg == null) {
+            this.ulProg = NyaAs.div(NyaDom.byId('ulProg'));
+            this.ulProgT = NyaAs.div(NyaDom.byId('ulProgT'));
+        }
+        const token: string | null = sessionStorage.getItem('Token');
+        if (token == null) {
+            return;
+        }
+        const fileUploadDialog = new mdui.Dialog('#fileUploadDialog', {
+            history: false,
+            modal: true,
+            closeOnEsc: false,
+            closeOnCancel: false,
+            closeOnConfirm: false,
+        });
+        fileUploadDialog.$element.on('confirm.mdui.dialog', () => {
+            const inputF: HTMLInputElement = NyaAs.input(NyaDom.byId('fuDialogFile'));
+            const mduiProgStyle: string[] = ['mdui-progress-indeterminate', 'mdui-progress-determinate', 'hide'];
+            if (inputF.files == null || inputF.files.length == 0) {
+                return;
+            }
+            const url: string = window.g_url + 'fileUpdata/';
+            if (this.ulProg!.className != mduiProgStyle[0]) {
+                this.ulProg!.className = mduiProgStyle[0];
+                this.ulProgT!.innerText = '0 %';
+            }
+            const ulProgOK = NyaDom.byId('ulProgOK');
+            ulProgOK.style.display = 'none';
+            this.netUpload = NyaNetwork.uploadFile(
+                url,
+                inputF,
+                false,
+                {
+                    uhash: this.userInfo[this.api.str.hash],
+                    t: token,
+                },
+                (status: number, value: number, max: number, percent: number) => {
+                    // 檔案上傳狀態 0正在上傳 1上傳完畢 -1取消 -2超時 -3錯誤
+                    console.log('1->', status, value, max, percent);
+                    if (status == 0) {
+                        // 正在上傳
+                        if (this.ulProg!.className != mduiProgStyle[1]) {
+                            this.ulProg!.className = mduiProgStyle[1];
+                        }
+                        this.ulProg!.style.width = percent.toString() + '%';
+                        this.ulProgT!.innerText = value.toString() + ' / ' + max.toString() + '   ' + percent.toString() + ' %';
+                        fileUploadDialog.handleUpdate();
+                    } else {
+                        if (this.ulProg!.className != mduiProgStyle[2]) {
+                            this.ulProg!.className = mduiProgStyle[2];
+                        }
+                        this.ulProgT!.innerText = '';
+                    }
+                },
+                (data: XMLHttpRequest | null, status: number) => {
+                    console.log('2->', data, status);
+                    if (status == undefined) {
                         return;
                     }
-                    formData.append('f', file, file.name);
-                    formData.append('uhash', this.uhash);
-                    formData.append('t', token);
-                    // const dataStr: any = { uhash: this.uhash, t: token, f: files.item(0) };
-                    xhr.send(formData);
-
-                    // that.api.netWork(
-                    //     window.g_url + 'fileUpdata/',
-                    //     { uhash: this.uhash, f: files.item(0) },
-                    //     true,
-                    //     (data) => {
-                    //         if (data != null) {
-                    //             const redata = JSON.parse(data.response);
-                    //             if (data.status === 200) {
-                    //                 //TODO:成功
-                    //             } else {
-                    //                 alert(redata.msg);
-                    //             }
-                    //         }
-                    //     },
-                    //     false,
-                    //     false
-                    // );
-                } else {
-                    alert('没有选择文件');
-                }
-            },
-        };
-        fileUploadDialog.removeEventListener('confirm', this.confirmDeleteObj);
-        this.confirmDeleteObj = elistener.fuc.bind(obj);
-        fileUploadDialog.addEventListener('confirm', this.confirmDeleteObj);
+                    fileUploadDialog.$element.off('confirm.mdui.dialog');
+                    fileUploadDialog.close(false);
+                    if (this.ulProg!.className != mduiProgStyle[2]) {
+                        this.ulProg!.className = mduiProgStyle[2];
+                    }
+                    ulProgOK.style.display = '';
+                    if (data && data.responseText.length > 0) {
+                        try {
+                            const jsonData: any = JSON.parse(data.responseText);
+                            const code: number = jsonData.code ?? '';
+                            const msg: string = jsonData.msg ?? '';
+                            const err: string = jsonData.err ?? '';
+                            mdui.alert(err, msg + ' (' + code.toString() + ')');
+                        } catch (e) {
+                            mdui.alert(data.responseText, '错误 (' + status.toString() + ')');
+                        }
+                    }
+                    this.netUpload = null;
+                },
+                true,
+                'f'
+            );
+        });
+        fileUploadDialog.$element.on('cancel.mdui.dialog', () => {
+            if (this.netUpload) {
+                this.netUpload.abort();
+                location.reload();
+            }
+            this.netUpload = null;
+            fileUploadDialog.close();
+            const ulProgOK = NyaDom.byId('ulProgOK');
+            ulProgOK.style.display = '';
+        });
+        fileUploadDialog.open();
     }
 }

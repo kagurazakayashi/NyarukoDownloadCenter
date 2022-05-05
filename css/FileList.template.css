@@ -17,3 +17,9 @@
     text-align: left;
     padding-left: 5%;
 }
+
+#ulProgT {
+    text-align: right;
+    font-family: Consolas, Monaco, monospace;
+    padding-right: 10px;
+}
