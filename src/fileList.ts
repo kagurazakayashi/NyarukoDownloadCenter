@@ -11,7 +11,6 @@ export default class UserFileList {
     templateElement: NyaTemplateElement | null = null;
     api: API = new API();
     userInfo: any = {};
-    filelist: any[] = [];
     confirmDeleteObj: any = null;
 
     constructor() {
@@ -47,22 +46,6 @@ export default class UserFileList {
                 ctime = this.userInfo['disable_enddate'] > 0 ? NyaTime.timeStamp2timeString(this.userInfo['disable_enddate']) : '-';
                 NyaDom.byId('disEndTime').innerText = ctime;
                 this.getFileList(token);
-
-                const btnDownloads = NyaDom.byClass('flbtnDownload');
-                const btnDeletes = NyaDom.byClass('flbtnDelete');
-                for (let i = 0; i < this.filelist.length; i++) {
-                    const file = this.filelist[i];
-                    btnDownloads[i].addEventListener(this.api.str.click, () => {
-                        this.downLoad(file);
-                    });
-                    btnDeletes[i].addEventListener(this.api.str.click, () => {
-                        this.deleteFile(file);
-                    });
-                }
-                const btnfileUpload = NyaDom.byId('btnFileUpload');
-                btnfileUpload.addEventListener(this.api.str.click, () => {
-                    this.fileUP();
-                });
             }
             return true;
         });
@@ -94,6 +77,7 @@ export default class UserFileList {
         if (data == null || data.length <= 0) {
             return;
         }
+        let filelist: any[] = [];
         for (const item of data) {
             const namestyle = 'style="color: ' + (item.exist == 1 ? 'black' : 'gray; text-decoration:line-through') + ';"';
             html += this.templateElement?.codeByID('row', [
@@ -103,23 +87,40 @@ export default class UserFileList {
                 [this.api.str.creation_date, NyaTime.timeStamp2timeString(item.creation_date, 5)],
                 [this.api.str.modification_date, NyaTime.timeStamp2timeString(item.modification_date, 5)],
             ]);
-            this.filelist.push(item);
+            filelist.push(item);
         }
+
         NyaDom.byId('fileListBody').innerHTML = html.length > 0 ? html : '<p>没有文件</p>';
+
+        const btnDownloads: HTMLButtonElement[] = NyaDom.byClass('flbtnDownload') as HTMLButtonElement[];
+        const btnDeletes: HTMLButtonElement[] = NyaDom.byClass('flbtnDelete') as HTMLButtonElement[];
+        for (let i = 0; i < filelist.length; i++) {
+            const file = filelist[i];
+            const btnDL: HTMLButtonElement = btnDownloads[i];
+            const btnDel: HTMLButtonElement = btnDeletes[i];
+            btnDL.addEventListener(this.api.str.click, () => {
+                this.downLoad(file);
+            });
+            btnDel.addEventListener(this.api.str.click, () => {
+                this.deleteFile(file);
+            });
+        }
+        const btnfileUpload = NyaDom.byId('btnFileUpload');
+        btnfileUpload.addEventListener(this.api.str.click, () => {
+            this.fileUP();
+        });
     }
 
     downLoad(fhash: string) {
-        console.log(fhash);
         this.api.netWork(
             window.g_url + 'fileDownload/',
             { fh: fhash[this.api.str.hash], path: 1 },
             true,
             (data) => {
                 if (data != null) {
-                    console.log(data);
                     if (data.status === 200) {
                         // 返回200
-                        var blob = data.response;
+                        var blob: Blob = data.response;
                         var reader = new FileReader();
                         reader.readAsDataURL(blob); // 转换为base64，可以直接放入a表情href
                         reader.onload = (e: ProgressEvent<FileReader>) => {
@@ -138,7 +139,7 @@ export default class UserFileList {
                             dwdiv.innerHTML = '';
                         };
                     } else {
-                        var blob = data.response;
+                        var blob: Blob = data.response;
                         var reader = new FileReader();
                         reader.readAsText(blob, 'utf8'); // 转换为base64，可以直接放入a表情href
                         reader.onload = (e) => {
@@ -155,7 +156,6 @@ export default class UserFileList {
     deleteFile(info: any) {
         const deleteDialog: HTMLDivElement = NyaDom.byId('deleteDialog') as HTMLDivElement;
         const dialogContent: HTMLDivElement[] = NyaDom.dom('.mdui-dialog-content', deleteDialog) as HTMLDivElement[];
-        console.log('dialogContent', dialogContent);
 
         dialogContent.forEach((element) => {
             element.innerHTML = '是否删除文件：' + info[this.api.str.name] + ' ?';
@@ -173,6 +173,7 @@ export default class UserFileList {
                 that.api.netWork(window.g_url + 'fileDelete/', { uhash: this.uhash, fh: this.fh }, true, (data) => {
                     if (data != null) {
                         const redata = JSON.parse(data.response);
+                        console.log(redata);
                         if (data.status === 200) {
                             //TODO:成功
                         } else {
@@ -180,7 +181,6 @@ export default class UserFileList {
                         }
                     }
                 });
-                console.log('!!!', this.uhash, '\r\n', this.fh);
             },
         };
         deleteDialog.removeEventListener('confirm', this.confirmDeleteObj);
@@ -191,8 +191,6 @@ export default class UserFileList {
     fileUP() {
         const inputF: HTMLInputElement = NyaDom.byId('fuDialogFile') as HTMLInputElement;
         const fileUploadDialog: HTMLDivElement = NyaDom.byId('fileUploadDialog') as HTMLDivElement;
-        // const btnConfirm: HTMLButtonElement = NyaDom.dom('.mdui-btn', fileUploadDialog, true) as HTMLButtonElement;
-        console.log(new Date().valueOf());
         const that = this;
         const obj = {
             uhash: this.userInfo[this.api.str.hash],
@@ -202,41 +200,49 @@ export default class UserFileList {
             fuc() {
                 const files: FileList | null = inputF.files;
                 if (files != null && files.length > 0) {
-                    // const xhr: XMLHttpRequest = new XMLHttpRequest();
-                    // xhr.open('post', window.g_url + 'fileUpdata/', true);
-                    // xhr.onload = function () {
-                    //     // this.log(`请求网址 ${url} 成功，返回数据 ${this.responseText}`, this.nyaLibName);
-                    //     console.log(this);
-                    // };
-                    // xhr.onerror = function () {
-                    //     // this.log(`请求网址 ${url} 失败，返回状态码 ${this.status}`, this.nyaLibName, -2);
-                    //     console.log(this);
-                    // };
+                    const xhr: XMLHttpRequest = new XMLHttpRequest();
+                    xhr.open('post', window.g_url + 'fileUpdata/', true);
+                    xhr.onload = function () {
+                        // this.log(`请求网址 ${url} 成功，返回数据 ${this.responseText}`, this.nyaLibName);
+                        console.log(this);
+                    };
+                    xhr.onerror = function () {
+                        // this.log(`请求网址 ${url} 失败，返回状态码 ${this.status}`, this.nyaLibName, -2);
+                        console.log(this);
+                    };
 
-                    // xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                     // xhr.setRequestHeader('Content-Type', 'multipart/form-data');
-                    // const token = sessionStorage.getItem('Token');
+                    const token = sessionStorage.getItem('Token');
+                    let formData = new FormData();
+                    const file = files.item(0);
+                    file?.arrayBuffer;
+                    const fileblob: Blob = new Blob();
+                    if (file == null || token == null) {
+                        return;
+                    }
+                    formData.append('f', file, file.name);
+                    formData.append('uhash', this.uhash);
+                    formData.append('t', token);
                     // const dataStr: any = { uhash: this.uhash, t: token, f: files.item(0) };
-                    // xhr.send(dataStr);
+                    xhr.send(formData);
 
-                    that.api.netWork(
-                        window.g_url + 'fileUpdata/',
-                        { uhash: this.uhash, f: files.item(0) },
-                        true,
-                        (data) => {
-                            if (data != null) {
-                                const redata = JSON.parse(data.response);
-                                console.log(redata);
-                                if (data.status === 200) {
-                                    //TODO:成功
-                                } else {
-                                    alert(redata.msg);
-                                }
-                            }
-                        },
-                        false,
-                        false
-                    );
+                    // that.api.netWork(
+                    //     window.g_url + 'fileUpdata/',
+                    //     { uhash: this.uhash, f: files.item(0) },
+                    //     true,
+                    //     (data) => {
+                    //         if (data != null) {
+                    //             const redata = JSON.parse(data.response);
+                    //             if (data.status === 200) {
+                    //                 //TODO:成功
+                    //             } else {
+                    //                 alert(redata.msg);
+                    //             }
+                    //         }
+                    //     },
+                    //     false,
+                    //     false
+                    // );
                 } else {
                     alert('没有选择文件');
                 }
