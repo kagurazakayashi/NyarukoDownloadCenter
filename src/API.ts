@@ -183,43 +183,7 @@ export default class API {
             }
         });
     }
-
-    formatTimeStamp(timeStamp: any, format: string): string {
-        if (!timeStamp) {
-            return '';
-        }
-        if (!format) {
-            format = 'YYYY-MM-dd';
-        }
-        let strDate: any;
-        switch (typeof timeStamp) {
-            case 'string':
-                strDate = new Date(timeStamp.replace(/-/g, '/'));
-                break;
-            case 'number':
-                strDate = new Date(timeStamp);
-                break;
-        }
-        if (strDate instanceof Date) {
-            const dict: any = {
-                YYYY: strDate.getFullYear(),
-                M: strDate.getMonth() + 1,
-                d: strDate.getDate(),
-                H: strDate.getHours(),
-                m: strDate.getMinutes(),
-                s: strDate.getSeconds(),
-                MM: ('' + (strDate.getMonth() + 101)).substring(1),
-                dd: ('' + (strDate.getDate() + 100)).substring(1),
-                HH: ('' + (strDate.getHours() + 100)).substring(1),
-                mm: ('' + (strDate.getMinutes() + 100)).substring(1),
-                ss: ('' + (strDate.getSeconds() + 100)).substring(1),
-            };
-            return format.replace(/(YYYY|MM?|dd?|HH?|ss?|mm?)/g, function () {
-                return dict[arguments[0]];
-            });
-        }
-        return '';
-    }
+    
     formatToTimeStamp(str: string): string {
         // const reg = /^(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/;
         // const s: RegExpMatchArray | null = str.match(reg);

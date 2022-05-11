@@ -6,6 +6,7 @@ import NyaDom from './nyalib/nyadom';
 import NyaNetwork from './nyalib/nyanetwork';
 import { NyaTemplateElement } from './nyalib/nyatemplate';
 import QRCode from 'qrcode-generator';
+import NyaTime from './nyalib/nyatime';
 
 export default class UserList {
     templateElement: NyaTemplateElement | null = null;
@@ -54,8 +55,8 @@ export default class UserList {
                         let tabStr: string = '';
                         const infos: any[] = [];
                         redata['data'].forEach((ele: any) => {
-                            const creationDate = ele[this.api.str.creation_date] > 0 ? this.api.formatTimeStamp(ele[this.api.str.creation_date] * 1000, this.api.str.date) : '';
-                            const modificationDate = ele[this.api.str.modification_date] > 0 ? this.api.formatTimeStamp(ele[this.api.str.modification_date] * 1000, this.api.str.date) : '';
+                            const creationDate = ele[this.api.str.creation_date] > 0 ? NyaTime.timeStamp2timeStringFormat(ele[this.api.str.creation_date] * 1000, this.api.str.date) : '';
+                            const modificationDate = ele[this.api.str.modification_date] > 0 ? NyaTime.timeStamp2timeStringFormat(ele[this.api.str.modification_date] * 1000, this.api.str.date) : '';
                             tabStr += this.templateElement?.codeByID('row', [
                                 [this.api.str.username, ele[this.api.str.username]],
                                 [this.api.str.nickname, ele[this.api.str.nickname]],

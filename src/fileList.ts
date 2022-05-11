@@ -40,9 +40,9 @@ export default class UserFileList {
                 NyaDom.byId('nick').innerText = this.userInfo['nickname'];
                 NyaDom.byId('group').innerText = window.g_GroupList[this.userInfo['group_code']][this.api.str.name];
                 NyaDom.byId('permissions').innerText = window.g_PermissionsList[this.userInfo['permissions_id']][this.api.str.describe];
-                let ctime: string = this.userInfo[this.api.str.creation_date] > 0 ? this.api.formatTimeStamp(this.userInfo[this.api.str.creation_date] * 1000, 'YYYY-MM-dd HH:mm:ss') : '';
+                let ctime: string = this.userInfo[this.api.str.creation_date] > 0 ? NyaTime.timeStamp2timeStringFormat(this.userInfo[this.api.str.creation_date] * 1000, 'YYYY-MM-dd HH:mm:ss') : '';
                 NyaDom.byId('ctime').innerText = ctime;
-                ctime = this.userInfo[this.api.str.modification_date] > 0 ? this.api.formatTimeStamp(this.userInfo[this.api.str.modification_date] * 1000, 'YYYY-MM-dd HH:mm:ss') : '';
+                ctime = this.userInfo[this.api.str.modification_date] > 0 ? NyaTime.timeStamp2timeStringFormat(this.userInfo[this.api.str.modification_date] * 1000, 'YYYY-MM-dd HH:mm:ss') : '';
                 NyaDom.byId('mtime').innerText = ctime;
                 // NyaDom.byId('locale').innerText = this.userInfo['locale_code'];
                 NyaDom.byId('enable').innerText = NyaStrings.booleanToString(this.userInfo['enable'], '是', '否');
