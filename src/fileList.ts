@@ -40,9 +40,9 @@ export default class UserFileList {
                 NyaDom.byId('nick').innerText = this.userInfo['nickname'];
                 NyaDom.byId('group').innerText = window.g_GroupList[this.userInfo['group_code']][this.api.str.name];
                 NyaDom.byId('permissions').innerText = window.g_PermissionsList[this.userInfo['permissions_id']][this.api.str.describe];
-                let ctime: string = this.userInfo[this.api.str.creation_date] > 0 ? NyaTime.timeStamp2timeStringFormat(this.userInfo[this.api.str.creation_date] * 1000, 'YYYY-MM-dd HH:mm:ss') : '';
+                let ctime: string = this.userInfo[this.api.str.creation_date] > 0 ? NyaTime.timeStamp2timeStringFormat(this.userInfo[this.api.str.creation_date] * 1000, this.api.str.date) : '';
                 NyaDom.byId('ctime').innerText = ctime;
-                ctime = this.userInfo[this.api.str.modification_date] > 0 ? NyaTime.timeStamp2timeStringFormat(this.userInfo[this.api.str.modification_date] * 1000, 'YYYY-MM-dd HH:mm:ss') : '';
+                ctime = this.userInfo[this.api.str.modification_date] > 0 ? NyaTime.timeStamp2timeStringFormat(this.userInfo[this.api.str.modification_date] * 1000, this.api.str.date) : '';
                 NyaDom.byId('mtime').innerText = ctime;
                 // NyaDom.byId('locale').innerText = this.userInfo['locale_code'];
                 NyaDom.byId('enable').innerText = NyaStrings.booleanToString(this.userInfo['enable'], '是', '否');
@@ -50,6 +50,9 @@ export default class UserFileList {
                 NyaDom.byId('disStrTime').innerText = ctime;
                 ctime = this.userInfo['disable_enddate'] > 0 ? NyaTime.timeStamp2timeString(this.userInfo['disable_enddate']) : '-';
                 NyaDom.byId('disEndTime').innerText = ctime;
+                NyaEvent.addEventListener(NyaDom.byId('btnFileUpload'), this.api.str.click, () => {
+                    this.fileUploadUI();
+                });
                 this.getFileList(token);
             }
             return true;
@@ -97,22 +100,23 @@ export default class UserFileList {
 
         NyaDom.byId('fileListBody').innerHTML = html.length > 0 ? html : '<p>没有文件</p>';
 
-        const btnDownloads: HTMLButtonElement[] = NyaDom.byClass('flbtnDownload') as HTMLButtonElement[];
-        const btnDeletes: HTMLButtonElement[] = NyaDom.byClass('flbtnDelete') as HTMLButtonElement[];
+        const btnDownloads: HTMLButtonElement[] | null = NyaDom.byClass('flbtnDownload') as HTMLButtonElement[] | null;
+        const btnDeletes: HTMLButtonElement[] | null = NyaDom.byClass('flbtnDelete') as HTMLButtonElement[] | null;
         for (let i = 0; i < filelist.length; i++) {
             const file = filelist[i];
-            const btnDL: HTMLButtonElement = btnDownloads[i];
-            const btnDel: HTMLButtonElement = btnDeletes[i];
-            NyaEvent.addEventListener(btnDL, this.api.str.click, () => {
-                this.downLoad(file);
-            });
-            NyaEvent.addEventListener(btnDel, this.api.str.click, () => {
-                this.deleteFile(file);
-            });
+            if (btnDownloads != null && btnDownloads.length > i) {
+                const btnDL: HTMLButtonElement = btnDownloads[i];
+                NyaEvent.addEventListener(btnDL, this.api.str.click, () => {
+                    this.downLoad(file);
+                });
+            }
+            if (btnDeletes != null && btnDeletes.length > i) {
+                const btnDel: HTMLButtonElement = btnDeletes[i];
+                NyaEvent.addEventListener(btnDel, this.api.str.click, () => {
+                    this.deleteFile(file);
+                });
+            }
         }
-        NyaEvent.addEventListener(NyaDom.byId('btnFileUpload'), this.api.str.click, () => {
-            this.fileUploadUI();
-        });
     }
 
     downLoad(fhash: string) {
