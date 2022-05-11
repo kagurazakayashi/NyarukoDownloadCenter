@@ -130,7 +130,7 @@ export default class UserList {
                         if (data != null) {
                             if (data.status === 200) {
                                 setTimeout(() => {
-                                    const url = window.g_url + '#u=' + username + '&p=' + password;
+                                    const url = window.g_QRurl + '#u=' + username + '&p=' + password;
                                     const qr: QRCode = QRCode(5, 'L');
                                     qr.addData(url, 'Byte');
                                     qr.make();

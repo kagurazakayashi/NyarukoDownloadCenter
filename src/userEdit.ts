@@ -115,7 +115,6 @@ export default class UserEdit {
                         }
                     });
                 });
-
                 mdui.mutation();
             }
             return true;
