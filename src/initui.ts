@@ -9,6 +9,7 @@ export default class InitUI {
 
     constructor() {
         this.api.getPermissionsList();
+        this.api.getLocaleList();
 
         this.api.jumpPage();
         window.onhashchange = () => {
@@ -26,6 +27,6 @@ export default class InitUI {
         NyaDom.metaSet('description', NyaDom.metaGet('abstract') + ' ' + NyaDom.metaGet('keywords'));
         NyaDebug.infoToMeta();
         NyaDom.metaSet('title', document.title);
-        NyaDom.byId('title').innerHTML = document.title = NyaDom.metaGet('abstract') + NyaDom.metaGet('keywords');
+        NyaDom.byId('title').innerHTML = document.title = NyaDom.metaGet('abstract') + ' ' + NyaDom.metaGet('keywords');
     }
 }

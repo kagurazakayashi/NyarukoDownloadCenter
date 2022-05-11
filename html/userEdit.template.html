@@ -1,43 +1,60 @@
 <template>
-    <div class="from" id="userEditFrom">
-        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom mdui-textfield-invalid-html5">
+    <div class="form" id="userEditFrom">
+        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom">
             <label class="mdui-textfield-label">昵称</label>
-            <input class="mdui-textfield-input loginInput" name="nick" type="text" required="" />
+            <input class="mdui-textfield-input loginInput item" name="nick" type="text" required />
         </div>
         <div class="">
-            <label class="mdui-label">用户组</label>
-            <select class="mdui-select" id="groud" mdui-select></select>
+            <label class="mdui-label">用户组&emsp;</label>
+            <select class="mdui-select item" id="groud" name="groud" mdui-select></select>
         </div>
         <div class="">
-            <label class="mdui-label">权限</label>
-            <select class="mdui-select" id="permissions" mdui-select></select>
+            <label class="mdui-label">权限&emsp;</label>
+            <select class="mdui-select item" id="permissions" name="permissions" mdui-select></select>
         </div>
         <div class="">
-            <label class="mdui-label">是否可用</label>
-            <select class="mdui-select" id="enabled" mdui-select>
+            <label class="mdui-label">是否可用&emsp;</label>
+            <select class="mdui-select item" id="enabled" name="enabled" mdui-select>
                 <option value="1">可用</option>
                 <option value="0">停用</option>
             </select>
         </div>
-        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom mdui-textfield-invalid-html5">
+        <div class="">
+            <label class="mdui-label">语言&emsp;</label>
+            <select class="mdui-select item" id="locale" name="locale" mdui-select></select>
+        </div>
+        <!-- <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom mdui-textfield-invalid-html5">
             <label class="mdui-label">封禁开始时间</label>
             <button id="enableStr">test</button>
+            <input class="mdui-textfield-input item" name="enableStart" type="text" required />
         </div>
         <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom mdui-textfield-invalid-html5">
             <label class="mdui-label">封禁结束时间</label>
             <button id="enableStr">test</button>
-        </div>
-
+            <input class="mdui-textfield-input item" name="enableEnd" type="text" required />
+        </div> -->
+        <p>&emsp;</p>
         <div class="mdui-divider"></div>
-        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom mdui-textfield-invalid-html5">
+        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom">
             <label class="mdui-textfield-label">密码</label>
-            <input class="mdui-textfield-input loginInput" name="password" type="password" required="" />
+            <input class="mdui-textfield-input item" name="password" type="password" pattern="^.*(?=.{3,}).*$" required />
+            <div class="mdui-textfield-error" id="pw">密码至少 3 位</div>
+            <div class="mdui-textfield-helper">请输入至少 3 位的密码</div>
         </div>
-        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom mdui-textfield-invalid-html5">
-            <label class="mdui-textfield-label">验证密码</label>
-            <input class="mdui-textfield-input loginInput" name="verifypassword" type="password" required="" />
+        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom">
+            <label class="mdui-textfield-label">新密码</label>
+            <input class="mdui-textfield-input item" name="newpassword" type="password" pattern="^.*(?=.{3,}).*$" required />
+            <div class="mdui-textfield-error" id="npw">密码至少 3 位</div>
+            <div class="mdui-textfield-helper">请输入至少 3 位的密码</div>
         </div>
-        <button id="btnEdit" class="mdui-btn mdui-btn-raised mdui-color-theme action-btn" mdui-dialog="{target: '#Dialog'}">确认修改</button>
+        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom mdui-textfield-invalid">
+            <label class="mdui-textfield-label">验证新密码</label>
+            <input class="mdui-textfield-input item" name="verifynewpassword" type="password" required />
+            <div class="mdui-textfield-error" id="vnpw"></div>
+        </div>
+        <button id="btnEdit" class="mdui-btn mdui-btn-raised mdui-color-theme action-btn">确认修改</button>
+        <p>&emsp;</p>
+        <p>&emsp;</p>
     </div>
     <div class="mdui-dialog" id="Dialog">
         <div class="mdui-dialog-title">确认修改？</div>

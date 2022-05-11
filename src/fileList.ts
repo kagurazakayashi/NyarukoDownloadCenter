@@ -103,14 +103,14 @@ export default class UserFileList {
             const file = filelist[i];
             const btnDL: HTMLButtonElement = btnDownloads[i];
             const btnDel: HTMLButtonElement = btnDeletes[i];
-            NyaEvent.addEventListener(btnDL,this.api.str.click, () => {
+            NyaEvent.addEventListener(btnDL, this.api.str.click, () => {
                 this.downLoad(file);
             });
-            NyaEvent.addEventListener(btnDel,this.api.str.click, () => {
+            NyaEvent.addEventListener(btnDel, this.api.str.click, () => {
                 this.deleteFile(file);
             });
         }
-        NyaEvent.addEventListener(NyaDom.byId('btnFileUpload'),this.api.str.click, () => {
+        NyaEvent.addEventListener(NyaDom.byId('btnFileUpload'), this.api.str.click, () => {
             this.fileUploadUI();
         });
     }
@@ -147,8 +147,23 @@ export default class UserFileList {
                         var reader = new FileReader();
                         reader.readAsText(blob, 'utf8'); // 转换为base64，可以直接放入a表情href
                         reader.onload = (e) => {
+                            console.log(reader.result);
                             var msg = JSON.parse(reader.result as string);
-                            this.api.errHandle(msg['code']);
+                            const inst = new mdui.Dialog('#errDialog');
+                            inst.open();
+                            const msgDialog = NyaDom.byId('errDialog');
+                            // msgDialog.style.height = '300px';
+                            const mDtitle: HTMLDivElement[] = NyaDom.dom('.mdui-dialog-title', msgDialog) as HTMLDivElement[];
+                            mDtitle.forEach((e) => {
+                                e.innerText = msg['msg'];
+                            });
+                            const mDcontent: HTMLDivElement[] = NyaDom.dom('.mdui-dialog-content', msgDialog) as HTMLDivElement[];
+                            mDcontent.forEach((e) => {
+                                e.innerText = msg['err'];
+                            });
+                            msgDialog.addEventListener('confirm', () => {
+                                this.api.errHandle(msg['code']);
+                            });
                         };
                     }
                 }
@@ -177,7 +192,7 @@ export default class UserFileList {
                 that.api.netWork(window.g_url + 'fileDelete/', { uhash: this.uhash, fh: this.fh }, true, (data) => {
                     if (data != null) {
                         const redata = JSON.parse(data.response);
-                        console.log(redata);
+                        // console.log(redata);
                         if (data.status === 200) {
                             //TODO:成功
                         } else {
@@ -231,7 +246,7 @@ export default class UserFileList {
                 },
                 (status: number, value: number, max: number, percent: number) => {
                     // 檔案上傳狀態 0正在上傳 1上傳完畢 -1取消 -2超時 -3錯誤
-                    console.log('1->', status, value, max, percent);
+                    // console.log('1->', status, value, max, percent);
                     if (status == 0) {
                         // 正在上傳
                         if (this.ulProg!.className != mduiProgStyle[1]) {
@@ -248,7 +263,7 @@ export default class UserFileList {
                     }
                 },
                 (data: XMLHttpRequest | null, status: number) => {
-                    console.log('2->', data, status);
+                    // console.log('2->', data, status);
                     if (status == undefined) {
                         return;
                     }

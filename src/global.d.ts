@@ -5,4 +5,5 @@ declare interface Window {
     g_Title:HTMLElement;
     g_PermissionsList:any;
     g_GroupList:any;
+    g_LocaleList:any;
 }

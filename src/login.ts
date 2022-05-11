@@ -69,7 +69,7 @@ export default class Login {
                 }
             });
             this.api.netWork(window.g_url + 'login/', netjson, false, (data) => {
-                console.log(data);
+                // console.log(data);
                 if (data != null) {
                     const redata = JSON.parse(data.response);
                     if (data.status == 200) {
@@ -96,7 +96,7 @@ export default class Login {
                     var permission = JSON.parse(userInfo['permissions']);
                     if (permission['id'] != 1) {
                         isTouserList = false;
-                        console.log(data.responseText);
+                        // console.log(data.responseText);
                         alert('此用户没有权限');
                     }
                 } else {
@@ -108,7 +108,7 @@ export default class Login {
                     });
                 }
                 if (isTouserList) {
-                    console.log('!!!!!');
+                    // console.log('!!!!!');
                     this.api.jumpPage(() => {
                         const userList = new UserList();
                         return true;

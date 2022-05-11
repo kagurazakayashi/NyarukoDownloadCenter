@@ -100,7 +100,7 @@ export default class UserList {
     }
 
     userInfo(info: any) {
-        console.log('userInfo', info);
+        // console.log('userInfo', info);
         this.clearScreen();
         sessionStorage.setItem('info', JSON.stringify(info));
         this.api.urlhref('#/userInfo');
@@ -130,7 +130,7 @@ export default class UserList {
                         if (data != null) {
                             if (data.status === 200) {
                                 setTimeout(() => {
-                                    const url = window.g_url + '#a=qlogin&u=' + username + '&p=' + password;
+                                    const url = window.g_url + '#u=' + username + '&p=' + password;
                                     const qr: QRCode = QRCode(5, 'L');
                                     qr.addData(url, 'Byte');
                                     qr.make();
@@ -161,16 +161,16 @@ export default class UserList {
     }
 
     userEdit(info: any) {
-        console.log('userEdit', info['hash']);
+        // console.log('userEdit', info['hash']);
         sessionStorage.setItem('info', JSON.stringify(info));
         this.api.urlhref('#/userEdit');
     }
 
     userDelete(info: any) {
-        console.log('userDelete', info['hash']);
+        // console.log('userDelete', info['hash']);
         const deleteDialog: HTMLDivElement = NyaDom.byId('deleteDialog') as HTMLDivElement;
         const dialogContent: HTMLDivElement[] = NyaDom.dom('.mdui-dialog-content', deleteDialog) as HTMLDivElement[];
-        console.log('dialogContent', dialogContent);
+        // console.log('dialogContent', dialogContent);
 
         dialogContent.forEach((element) => {
             element.innerHTML = '是否删除用户：' + info[this.api.str.username] + ' ?';
@@ -186,7 +186,7 @@ export default class UserList {
                 that.api.netWork(window.g_url + 'userDelete/', { h: this.hash }, true, (data) => {
                     if (data != null) {
                         const redata = JSON.parse(data.response);
-                        console.log(' redata ', data.response);
+                        // console.log(' redata ', data.response);
                         if (data.status === 200) {
                             //TODO:成功
                         } else {

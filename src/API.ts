@@ -31,20 +31,20 @@ export default class API {
     jumpPage(run?: () => {}) {
         const nowurl: string[] = window.location.href.split('?');
         if (nowurl.length > 1 && window.g_nowurl == nowurl[0]) {
-            console.log(' 111 ');
+            // console.log(' 111 ');
             return;
         }
-        console.log(' 222 ');
+        // console.log(' 222 ');
         window.g_nowurl = nowurl[0];
         let url: string[] = nowurl[0].split('/#/');
         if (url.length == 2) {
-            console.log(' 333 ');
+            // console.log(' 333 ');
             const token = sessionStorage.getItem('Token');
             if (token == '' || token == null || token == 'undefined') {
                 let login = new Login();
-                console.log(' 444 ');
+                // console.log(' 444 ');
             } else {
-                console.log(' 555 ');
+                // console.log(' 555 ');
                 this.getGroupList();
                 switch (url[1]) {
                     case 'userInfo':
@@ -59,15 +59,15 @@ export default class API {
                 }
             }
         } else {
-            console.log(' 666 ');
+            // console.log(' 666 ');
             url = window.location.href.split('/#');
             if (url.length != 2) {
-                console.log(' 777 ');
+                // console.log(' 777 ');
                 if (run != null) {
-                    console.log(' 888 ');
+                    // console.log(' 888 ');
                     run();
                 } else {
-                    console.log(' 999 ');
+                    // console.log(' 999 ');
                     const userList = new UserList();
                 }
             }
@@ -119,6 +119,22 @@ export default class API {
         );
     }
 
+    getLocaleList() {
+        NyaNetwork.post(
+            window.g_url + 'localeList/',
+            undefined,
+            (data: XMLHttpRequest | null, status: number) => {
+                if (data != null) {
+                    const redata = JSON.parse(data.response);
+                    if (data.status == 200) {
+                        window.g_LocaleList = redata['data'];
+                    }
+                }
+            },
+            false
+        );
+    }
+
     errHandle(errCode: number) {
         switch (errCode) {
             case 3900:
@@ -140,9 +156,9 @@ export default class API {
         } else {
             if (isToken) {
                 data['t'] = token;
-                console.log(data);
+                // console.log(data);
             }
-            console.log(isblob);
+            // console.log(isblob);
             NyaNetwork.post(
                 url,
                 data,
@@ -203,5 +219,18 @@ export default class API {
             });
         }
         return '';
+    }
+    formatToTimeStamp(str: string): string {
+        // const reg = /^(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/;
+        // const s: RegExpMatchArray | null = str.match(reg);
+        // let result;
+        // if (s) {
+        //     result = new Date(Number(s[1]), Number(s[2]) - 1, Number(s[3]), Number(s[4]), Number(s[5]), Number(s[6]));
+        // }
+        // console.log(result?.getTime().toString());
+        const newstr = str.replace(/-/g, '/');
+        const date = new Date(newstr);
+        const time_str = date.getTime().toString();
+        return time_str.substring(0, 10);
     }
 }
