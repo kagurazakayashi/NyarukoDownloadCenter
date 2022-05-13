@@ -1,5 +1,9 @@
 <template>
     <div class="form" id="userEditFrom">
+        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom " id="username">
+            <label class="mdui-textfield-label">用户名</label>
+            <input class="mdui-textfield-input loginInput item" name="user" type="text" required />
+        </div>
         <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom">
             <label class="mdui-textfield-label">昵称</label>
             <input class="mdui-textfield-input loginInput item" name="nick" type="text" required />
@@ -41,13 +45,18 @@
             <div class="mdui-textfield-error" id="pw">密码至少 3 位</div>
             <div class="mdui-textfield-helper">请输入至少 3 位的密码</div>
         </div>
-        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom">
+        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom mdui-textfield-invalid new">
+            <label class="mdui-textfield-label">验证密码</label>
+            <input class="mdui-textfield-input item" name="verifypassword" type="password" required />
+            <div class="mdui-textfield-error" id="vpw"></div>
+        </div>
+        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom old">
             <label class="mdui-textfield-label">新密码</label>
             <input class="mdui-textfield-input item" name="newpassword" type="password" pattern="^.*(?=.{3,}).*$" required />
             <div class="mdui-textfield-error" id="npw">密码至少 3 位</div>
             <div class="mdui-textfield-helper">请输入至少 3 位的密码</div>
         </div>
-        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom mdui-textfield-invalid">
+        <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom mdui-textfield-invalid old">
             <label class="mdui-textfield-label">验证新密码</label>
             <input class="mdui-textfield-input item" name="verifynewpassword" type="password" required />
             <div class="mdui-textfield-error" id="vnpw"></div>

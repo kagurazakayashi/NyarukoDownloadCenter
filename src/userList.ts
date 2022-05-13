@@ -7,6 +7,7 @@ import NyaNetwork from './nyalib/nyanetwork';
 import { NyaTemplateElement } from './nyalib/nyatemplate';
 import QRCode from 'qrcode-generator';
 import NyaTime from './nyalib/nyatime';
+import NyaEvent from './nyalib/nyaevent';
 
 export default class UserList {
     templateElement: NyaTemplateElement | null = null;
@@ -19,6 +20,10 @@ export default class UserList {
         // sessionStorage.removeItem('info');
         this.api.getTempHTML(this.templateElement, 'userlist.template', (templateElement) => {
             this.templateElement = templateElement;
+            NyaEvent.addEventListener(NyaDom.byId('btnFileUpload'), this.api.str.click, () => {
+                sessionStorage.removeItem('info');
+                this.api.urlhref('#/userEdit');
+            });
             this.getUserList();
 
             return true;

@@ -6,30 +6,56 @@ import { NyaTemplateElement } from './nyalib/nyatemplate';
 
 export default class UserEdit {
     templateElement: NyaTemplateElement | null = null;
+    isAdd = false;
     api: API = new API();
+    info: any = {};
     confirmDeleteObj: any = null;
     confirmQRCodeGObj: any = null;
 
     constructor() {
         console.log('UserEdit');
         const infoStr: string | null = sessionStorage.getItem('info');
-        let info: any = {};
         if (infoStr == '' || infoStr == null || infoStr == 'undefined') {
-            window.history.back();
-            return;
+            this.isAdd = true;
+            window.g_Title.innerHTML = '新建用户';
         } else {
-            info = JSON.parse(infoStr);
+            this.info = JSON.parse(infoStr);
+            let userShow: string = this.info['nickname'] == '' ? this.info['username'] : this.info['nickname'] + '(' + this.info['username'] + ')';
+            window.g_Title.innerHTML = '修改用户信息/' + userShow;
         }
-        let userShow: string = info['nickname'] == '' ? info['username'] : info['nickname'] + '(' + info['username'] + ')';
-        window.g_Title.innerHTML = '修改用户信息/' + userShow;
         this.api.getTempHTML(this.templateElement, 'userEdit.template', (templateElement) => {
             this.templateElement = templateElement;
+            if (this.isAdd) {
+                const olds: HTMLDivElement[] = NyaDom.byClass('old') as HTMLDivElement[];
+                console.log('olds', olds);
+                olds.forEach((e) => {
+                    e.remove();
+                });
+            } else {
+                const news: HTMLDivElement[] = NyaDom.byClass('new') as HTMLDivElement[];
+                console.log('news', news);
+                news.forEach((e) => {
+                    e.remove();
+                });
+            }
             const token = sessionStorage.getItem('Token');
             if (token == '' || token == null || token == 'undefined') {
                 const login = new Login();
             } else {
                 // this.getUserList(token);
                 let ueTable = NyaDom.byId('userEditFrom');
+
+                if (!this.isAdd) {
+                    const doms: HTMLInputElement[] | null = NyaDom.dom('input', ueTable) as HTMLInputElement[] | null;
+                    if (doms) {
+                        doms.forEach((e) => {
+                            if (e.name == 'user') {
+                                e.disabled = true;
+                                e.value = this.info['username'];
+                            }
+                        });
+                    }
+                }
                 let selects: HTMLSelectElement[] = NyaDom.dom('select', ueTable) as HTMLSelectElement[];
                 // console.log(selects);
                 selects.forEach((select) => {
@@ -40,7 +66,7 @@ export default class UserEdit {
                                 if (Object.prototype.hasOwnProperty.call(window.g_GroupList, key)) {
                                     const element = window.g_GroupList[key];
 
-                                    select.innerHTML += '<option value="' + key + '"' + (info['group_code'] == key ? ' selected' : '') + '>' + element[this.api.str.name] + '</option>';
+                                    select.innerHTML += '<option value="' + key + '"' + (this.info['group_code'] == key ? ' selected' : '') + '>' + element[this.api.str.name] + '</option>';
                                 }
                             }
                             break;
@@ -50,7 +76,7 @@ export default class UserEdit {
                                 if (Object.prototype.hasOwnProperty.call(window.g_PermissionsList, key)) {
                                     const element = window.g_PermissionsList[key];
 
-                                    select.innerHTML += '<option value="' + key + '"' + (info['permissions_id'] == key ? ' selected' : '') + '>' + element[this.api.str.describe] + '</option>';
+                                    select.innerHTML += '<option value="' + key + '"' + (this.info['permissions_id'] == key ? ' selected' : '') + '>' + element[this.api.str.describe] + '</option>';
                                 }
                             }
                             break;
@@ -60,7 +86,7 @@ export default class UserEdit {
                                 if (Object.prototype.hasOwnProperty.call(window.g_LocaleList, key)) {
                                     const element = window.g_LocaleList[key];
 
-                                    select.innerHTML += '<option value="' + key + '"' + (info['locale_code'] == key ? ' selected' : '') + '>' + element[1] + '</option>';
+                                    select.innerHTML += '<option value="' + key + '"' + (this.info['locale_code'] == key ? ' selected' : '') + '>' + element[1] + '</option>';
                                 }
                             }
                             break;
@@ -80,10 +106,16 @@ export default class UserEdit {
                     formData = this.verifyFrom();
                 };
                 const editDialog: HTMLButtonElement = NyaDom.byId('Dialog') as HTMLButtonElement;
+                if (this.isAdd) {
+                    const mDtitle: HTMLDivElement[] = NyaDom.dom('.mdui-dialog-title', editDialog) as HTMLDivElement[];
+                    mDtitle.forEach((e) => {
+                        e.innerText = '确认添加用户？';
+                    });
+                }
                 editDialog.addEventListener('confirm', () => {
                     //TODO:连接修改端口
                     // console.log('确认修改！！！');
-                    this.api.netWork(window.g_url + 'userEdit/', formData, true, (data) => {
+                    this.api.netWork(window.g_url + (this.isAdd ? 'userAdd/' : 'userEdit/'), formData, true, (data) => {
                         if (data != null) {
                             const inst = new mdui.Dialog('#errDialog');
                             inst.open();
@@ -96,9 +128,10 @@ export default class UserEdit {
                                 mDtitle.forEach((e) => {
                                     e.innerText = redata.msg;
                                 });
+                                window.history.back();
                             } else {
                                 mDtitle.forEach((e) => {
-                                    e.innerText = '修改失败！';
+                                    e.innerText = (this.isAdd ? '新建用户' : '修改用户资料') + '失败！';
                                 });
                                 const mDcontent: HTMLDivElement[] = NyaDom.dom('.mdui-dialog-content', msgDialog) as HTMLDivElement[];
                                 mDcontent.forEach((e) => {
@@ -134,6 +167,11 @@ export default class UserEdit {
                     case 'nick':
                         if (element.value != null && element.value != '') {
                             formData.nickname = element.value;
+                        }
+                        break;
+                    case 'user':
+                        if (element.value != null && element.value != '') {
+                            formData.username = element.value;
                         }
                         break;
                     case 'groud':
@@ -174,6 +212,22 @@ export default class UserEdit {
                             isShowDialog = false;
                         }
                         break;
+                    case 'verifypassword':
+                        const vpw: HTMLDivElement = NyaDom.byId('vpw') as HTMLDivElement;
+                        // console.log(vnpw);
+                        if (formData.password != null && formData.password != element.value) {
+                            // console.log(' 111 ');
+                            delete formData.password;
+                            vpw.innerText = '无效的密码';
+                            isShowDialog = false;
+                        } else if (formData.password != null && formData.password == element.value) {
+                            // console.log(' 222 ');
+                            vpw.innerText = '';
+                        }
+                        mdui.updateTextFields('#vpw');
+                        // console.log(' === ', vnpw, ' === ');
+                        break;
+
                     case 'newpassword':
                         if (element.value != null && element.value != '') {
                             const npw: HTMLDivElement = NyaDom.byId('npw') as HTMLDivElement;
@@ -205,6 +259,9 @@ export default class UserEdit {
             });
         }
         if (isShowDialog) {
+            // console.log(formData);
+            // console.log(this.info);
+            formData.hash = this.info['hash'];
             const inst = new mdui.Dialog('#Dialog');
             inst.open();
         }
