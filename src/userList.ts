@@ -20,6 +20,14 @@ export default class UserList {
         // sessionStorage.removeItem('info');
         this.api.getTempHTML(this.templateElement, 'userlist.template', (templateElement) => {
             this.templateElement = templateElement;
+            const selectLocale: HTMLSelectElement = NyaDom.byId('locale') as HTMLSelectElement;
+            selectLocale.innerHTML = '';
+            for (const key in window.g_LocaleList) {
+                if (Object.prototype.hasOwnProperty.call(window.g_LocaleList, key)) {
+                    const element = window.g_LocaleList[key];
+                    selectLocale.innerHTML += '<option value="' + key + '">' + element[1] + '</option>';
+                }
+            }
             NyaEvent.addEventListener(NyaDom.byId('btnFileUpload'), this.api.str.click, () => {
                 sessionStorage.removeItem('info');
                 this.api.urlhref('#/userEdit');
@@ -114,7 +122,7 @@ export default class UserList {
 
     qrcodeGenerator(info: any) {
         const qrcondDialog: HTMLDivElement = NyaDom.byId('qrGeneratorDialog') as HTMLDivElement;
-        const dialogContent: HTMLInputElement[] = NyaDom.dom('.verifypassword', qrcondDialog) as HTMLInputElement[];
+        const dialogContent: HTMLSelectElement[] | HTMLInputElement[] = NyaDom.dom('.item', qrcondDialog) as HTMLSelectElement[] | HTMLInputElement[];
         const username: string = info['username'];
         const that = this;
         const obj = {
@@ -123,7 +131,21 @@ export default class UserList {
         const elistener = {
             hash: '',
             fuc() {
-                const password: string = dialogContent[0].value;
+                let password: string = '';
+                let locale: string = '';
+                dialogContent.forEach((ele) => {
+                    switch (ele.name) {
+                        case 'password':
+                            password = ele.value;
+                            break;
+                        case 'locale':
+                            locale = ele.value;
+                            break;
+
+                        default:
+                            break;
+                    }
+                });
                 that.api.netWork(
                     window.g_url + 'login/',
                     {
@@ -136,7 +158,7 @@ export default class UserList {
                         if (data != null) {
                             if (data.status === 200) {
                                 setTimeout(() => {
-                                    const url = window.g_QRurl + '#u=' + username + '&p=' + password;
+                                    const url = window.g_QRurl + '#u=' + username + '&p=' + password + '&l=' + locale;
                                     const qr: QRCode = QRCode(5, 'L');
                                     qr.addData(url, 'Byte');
                                     qr.make();

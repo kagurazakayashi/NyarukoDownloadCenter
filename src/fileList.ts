@@ -50,14 +50,23 @@ export default class UserFileList {
                 NyaDom.byId('disStrTime').innerText = ctime;
                 ctime = this.userInfo['disable_enddate'] > 0 ? NyaTime.timeStamp2timeString(this.userInfo['disable_enddate']) : '-';
                 NyaDom.byId('disEndTime').innerText = ctime;
+
+                const selectLocale: HTMLSelectElement = NyaDom.byId('locale') as HTMLSelectElement;
+                selectLocale.innerHTML = '';
+                for (const key in window.g_LocaleList) {
+                    if (Object.prototype.hasOwnProperty.call(window.g_LocaleList, key)) {
+                        const element = window.g_LocaleList[key];
+                        selectLocale.innerHTML += '<option value="' + key + '"' + (this.userInfo['locale_code'] == key ? ' selected' : '') + '>' + element[1] + '</option>';
+                    }
+                }
                 NyaEvent.addEventListener(NyaDom.byId('btnFileUpload'), this.api.str.click, () => {
                     this.fileUploadUI();
                 });
                 this.getFileList(token);
             }
+            mdui.mutation();
             return true;
         });
-        mdui.mutation();
     }
 
     getFileList(t: string) {
@@ -92,6 +101,7 @@ export default class UserFileList {
                 ['namestyle', namestyle],
                 [this.api.str.name, item.name],
                 [this.api.str.describe, item.describe.length ? item.describe : '无'],
+                [this.api.str.locale, window.g_LocaleList[item.locale_code][1]],
                 [this.api.str.creation_date, NyaTime.timeStamp2timeString(item.creation_date, 5)],
                 [this.api.str.modification_date, NyaTime.timeStamp2timeString(item.modification_date, 5)],
             ]);
@@ -227,6 +237,7 @@ export default class UserFileList {
             closeOnCancel: false,
             closeOnConfirm: false,
         });
+        const locale: HTMLSelectElement = NyaDom.byId('locale') as HTMLSelectElement;
         fileUploadDialog.$element.on('confirm.mdui.dialog', () => {
             const inputF: HTMLInputElement = NyaAs.input(NyaDom.byId('fuDialogFile'));
             const mduiProgStyle: string[] = ['mdui-progress-indeterminate', 'mdui-progress-determinate', 'hide'];
@@ -247,6 +258,7 @@ export default class UserFileList {
                 {
                     uhash: this.userInfo[this.api.str.hash],
                     t: token,
+                    localeCode: locale.value,
                 },
                 (status: number, value: number, max: number, percent: number) => {
                     // 檔案上傳狀態 0正在上傳 1上傳完畢 -1取消 -2超時 -3錯誤

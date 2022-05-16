@@ -14,6 +14,7 @@ export default class API {
         username: 'username',
         nickname: 'nickname',
         describe: 'describe',
+        locale: 'locale',
         creation_date: 'creation_date',
         modification_date: 'modification_date',
         click: 'click',

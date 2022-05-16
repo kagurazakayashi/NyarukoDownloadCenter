@@ -23,10 +23,18 @@
     <div class="mdui-dialog" id="qrGeneratorDialog">
         <div class="mdui-dialog-title">请输入用户密码以生成二维码</div>
         <div class="mdui-dialog-content" id="qrGeneratorDialog-content">
+            <p>&emsp;</p>
             <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom">
-                <label class="mdui-textfield-label">密码</label><input class="mdui-textfield-input verifypassword" name="password" type="password" required="" />
+                <label class="mdui-textfield-label">密码</label><input class="mdui-textfield-input item" name="password" type="password" required="" />
                 <div class="mdui-textfield-error">密码不能为空</div>
             </div>
+            <p>&emsp;</p>
+            <div>
+                <label class="mdui-label">语言&emsp;</label>
+                <select class="mdui-select item" id="locale" name="locale" mdui-select></select>
+            </div>
+            <p>&emsp;</p>
+            <p>&emsp;</p>
         </div>
         <div class="mdui-dialog-actions">
             <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>

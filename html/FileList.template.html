@@ -57,6 +57,7 @@
                 <th></th>
                 <th>文件名</th>
                 <th>描述</th>
+                <th>语言</th>
                 <th>创建时间</th>
                 <!-- <th>修改时间</th> -->
                 <th></th>
@@ -78,7 +79,17 @@
     <div class="mdui-dialog" id="fileUploadDialog">
         <div class="mdui-dialog-title">上传文件</div>
         <div class="mdui-dialog-content">
-            <input type="file" name="file" id="fuDialogFile">
+            <p>&emsp;</p>
+            <div>
+                <input type="file" name="file" id="fuDialogFile" />
+            </div>
+            <p>&emsp;</p>
+            <div>
+                <label class="mdui-label">语言&emsp;</label>
+                <select class="mdui-select item" id="locale" name="locale" mdui-select></select>
+            </div>
+            <p>&emsp;</p>
+            <p>&emsp;</p>
         </div>
         <div class="mdui-progress">
             <div id="ulProg" class="none"></div>
@@ -100,6 +111,7 @@
         </td>
         <td {{ namestyle }}>{{ name }}</td>
         <td>{{ describe }}</td>
+        <td>{{ locale }}</td>
         <td>{{ creation_date }}</td>
         <!-- <td>{{ modification_date }}</td> -->
         <td>
