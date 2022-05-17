@@ -198,4 +198,11 @@ export default class API {
         const time_str = date.getTime().toString();
         return time_str.substring(0, 10);
     }
+    roundup(v:number):number {
+        var _max = parseInt(v.toString()) + 1;
+        if (_max - v < 1) {
+            return _max;
+        }
+        return v;
+    }
 }

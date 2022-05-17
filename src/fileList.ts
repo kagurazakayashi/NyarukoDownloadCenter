@@ -17,6 +17,8 @@ export default class UserFileList {
     ulProg: HTMLDivElement | null = null;
     ulProgT: HTMLDivElement | null = null;
     netUpload: XMLHttpRequest | null = null;
+    nowStart: number = 0;
+    fileNumber: number = 3;
 
     constructor() {
         console.log('UserFileList');
@@ -69,17 +71,89 @@ export default class UserFileList {
         });
     }
 
+    turning(t: number) {
+        if (Number(t) < 0) {
+            this.nowStart -= this.fileNumber;
+        } else {
+            this.nowStart += this.fileNumber;
+        }
+        const token = sessionStorage.getItem('Token');
+        if (token == '' || token == null || token == 'undefined') {
+            let login = new Login();
+        } else {
+            this.getFileList(token);
+        }
+    }
+    jumppage(j: string) {
+        this.nowStart = (Number(j) - 1) * this.fileNumber;
+        const token = sessionStorage.getItem('Token');
+        if (token == '' || token == null || token == 'undefined') {
+            let login = new Login();
+        } else {
+            this.getFileList(token);
+        }
+    }
+
     getFileList(t: string) {
         const url: string = window.g_url + 'fileList/';
         const arg = {
             t: t,
             uhash: this.userInfo['hash'],
+            offset: this.nowStart,
+            rows: this.fileNumber,
         };
         this.api.netWork(url, arg, true, (data) => {
             if (data != null) {
                 let redata: any = JSON.parse(data.response);
+                console.log(data.response);
                 if (data.status == 200) {
-                    this.genFileList(redata.data);
+                    const listData = redata['data']['data'];
+                    const offset = redata['data']['offset'];
+                    const rows = redata['data']['rows'];
+                    const total = redata['data']['total'];
+                    if (listData.length < total) {
+                        let pagesDiv: HTMLUListElement = NyaDom.byId('pageNumber') as HTMLUListElement;
+                        let ULinnerHTML = '<ul>';
+                        if (this.nowStart != 0) {
+                            ULinnerHTML += '<li>上一页</li>';
+                        }
+                        for (let i = 0; i < this.api.roundup(total / this.fileNumber); i++) {
+                            if (i * this.fileNumber == this.nowStart) {
+                                ULinnerHTML += '<li>...</li>';
+                            } else {
+                                ULinnerHTML += '<li>' + (i + 1) + '</li>';
+                            }
+                        }
+                        if (!(listData.length < rows || offset + rows >= total)) {
+                            ULinnerHTML += '<li>下一页</li>';
+                        }
+                        ULinnerHTML += '</ul>';
+                        pagesDiv.innerHTML = ULinnerHTML;
+
+                        const lis: HTMLLIElement[] = NyaDom.dom('li', pagesDiv) as HTMLLIElement[];
+                        console.log(lis);
+                        lis.forEach((ele: HTMLLIElement) => {
+                            switch (ele.innerText) {
+                                case '上一页':
+                                    ele.addEventListener(this.api.str.click, () => {
+                                        this.turning(-1);
+                                    });
+                                    break;
+                                case '下一页':
+                                    ele.addEventListener(this.api.str.click, () => {
+                                        this.turning(1);
+                                    });
+                                    break;
+
+                                default:
+                                    ele.addEventListener(this.api.str.click, () => {
+                                        this.jumppage(ele.innerText);
+                                    });
+                                    break;
+                            }
+                        });
+                    }
+                    this.genFileList(listData);
                 } else {
                     this.api.errHandle(redata['code']);
                 }

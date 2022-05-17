@@ -2,3 +2,32 @@ body {
     margin: 0;
     padding: 0;
 }
+
+#pageNumber ul {
+    text-align: center;
+    width: 80%;
+    height: 42px;
+    margin: 0 auto;
+    list-style: none;
+    /* border: 1px solid #dfdfdf; */
+    background-color: white;
+}
+#pageNumber li {
+    display: inline;
+    list-style: none;
+}
+#pageNumber li {
+    display: inline;
+    position: relative;
+    top: 10px;
+    padding: 5px 10px;
+    background-color: rgb(229, 247, 248);
+    border: 5px solid white;
+    color: black;
+    font: 12px '微软雅黑';
+    text-decoration: none;
+}
+#pageNumber li:hover {
+    background: rgb(200, 240, 243);
+    opacity: 0.8;
+}
