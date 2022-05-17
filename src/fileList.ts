@@ -47,7 +47,7 @@ export default class UserFileList {
                 ctime = this.userInfo[this.api.str.modification_date] > 0 ? NyaTime.timeStamp2timeStringFormat(this.userInfo[this.api.str.modification_date] * 1000, this.api.str.date) : '';
                 NyaDom.byId('mtime').innerText = ctime;
                 // NyaDom.byId('locale').innerText = this.userInfo['locale_code'];
-                NyaDom.byId('enable').innerText = NyaStrings.booleanToString(this.userInfo['enable'], '是', '否');
+                NyaDom.byId('enable').innerText = NyaStrings.boolean2String(this.userInfo['enable'], '是', '否');
                 ctime = this.userInfo['disable_startdate'] > 0 ? NyaTime.timeStamp2timeString(this.userInfo['disable_startdate']) : '账户正常使用';
                 NyaDom.byId('disStrTime').innerText = ctime;
                 ctime = this.userInfo['disable_enddate'] > 0 ? NyaTime.timeStamp2timeString(this.userInfo['disable_enddate']) : '-';
@@ -61,7 +61,7 @@ export default class UserFileList {
                         selectLocale.innerHTML += '<option value="' + key + '"' + (this.userInfo['locale_code'] == key ? ' selected' : '') + '>' + element[1] + '</option>';
                     }
                 }
-                NyaEvent.addEventListener(NyaDom.byId('btnFileUpload'), this.api.str.click, () => {
+                NyaEvent.addEventListener(NyaDom.byId('btnFileUpload'), () => {
                     this.fileUploadUI();
                 });
                 this.getFileList(token);
@@ -190,13 +190,13 @@ export default class UserFileList {
             const file = filelist[i];
             if (btnDownloads != null && btnDownloads.length > i) {
                 const btnDL: HTMLButtonElement = btnDownloads[i];
-                NyaEvent.addEventListener(btnDL, this.api.str.click, () => {
+                NyaEvent.addEventListener(btnDL, () => {
                     this.downLoad(file);
                 });
             }
             if (btnDeletes != null && btnDeletes.length > i) {
                 const btnDel: HTMLButtonElement = btnDeletes[i];
-                NyaEvent.addEventListener(btnDel, this.api.str.click, () => {
+                NyaEvent.addEventListener(btnDel, () => {
                     this.deleteFile(file);
                 });
             }

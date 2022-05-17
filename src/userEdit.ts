@@ -1,8 +1,10 @@
 import mdui from 'mdui';
 import API from './API';
 import Login from './login';
+import NyaAs from './nyalib/nyaas';
 import NyaDom from './nyalib/nyadom';
 import { NyaTemplateElement } from './nyalib/nyatemplate';
+import NyaDatePicker from './nyalib/UI/datepicker';
 
 export default class UserEdit {
     templateElement: NyaTemplateElement | null = null;
@@ -11,6 +13,8 @@ export default class UserEdit {
     info: any = {};
     confirmDeleteObj: any = null;
     confirmQRCodeGObj: any = null;
+    disableStartPicker?: NyaDatePicker;
+    disableEndPicker?: NyaDatePicker;
 
     constructor() {
         console.log('UserEdit');
@@ -25,6 +29,10 @@ export default class UserEdit {
         }
         this.api.getTempHTML(this.templateElement, 'userEdit.template', (templateElement) => {
             this.templateElement = templateElement;
+            const disableStartInput: HTMLInputElement = NyaAs.input(NyaDom.byNameFirst('disableStart'));
+            this.disableStartPicker = new NyaDatePicker(disableStartInput, NyaDom.byId('disableStartP'));
+            const disableEndInput: HTMLInputElement = NyaAs.input(NyaDom.byNameFirst('disableEnd'));
+            this.disableEndPicker = new NyaDatePicker(disableEndInput, NyaDom.byId('disableEndP'));
             if (this.isAdd) {
                 const olds: HTMLDivElement[] = NyaDom.byClass('old') as HTMLDivElement[];
                 console.log('olds', olds);
@@ -194,13 +202,13 @@ export default class UserEdit {
                             formData.enabled = element.value;
                         }
                         break;
-                    case 'enableStart':
+                    case 'disableStart':
                         if (element.value != null && element.value != '') {
                             this.api.formatToTimeStamp('2022-05-09 12:00:00');
                             formData.enabled = element.value;
                         }
                         break;
-                    case 'enableEnd':
+                    case 'disableEnd':
                         break;
                     case 'password':
                         if (element.value != null && element.value.length > 3) {

@@ -30,7 +30,7 @@ export default class UserList {
                     selectLocale.innerHTML += '<option value="' + key + '">' + element[1] + '</option>';
                 }
             }
-            NyaEvent.addEventListener(NyaDom.byId('btnFileUpload'), this.api.str.click, () => {
+            NyaEvent.addEventListener(NyaDom.byId('btnFileUpload'), () => {
                 sessionStorage.removeItem('info');
                 this.api.urlhref('#/userEdit');
             });
