@@ -13,8 +13,6 @@ export default class UserEdit {
     info: any = {};
     confirmDeleteObj: any = null;
     confirmQRCodeGObj: any = null;
-    disableStartPicker?: NyaDatePicker;
-    disableEndPicker?: NyaDatePicker;
 
     constructor() {
         console.log('UserEdit');
@@ -29,10 +27,6 @@ export default class UserEdit {
         }
         this.api.getTempHTML(this.templateElement, 'userEdit.template', (templateElement) => {
             this.templateElement = templateElement;
-            const disableStartInput: HTMLInputElement = NyaAs.input(NyaDom.byNameFirst('disableStart'));
-            this.disableStartPicker = new NyaDatePicker(disableStartInput, NyaDom.byId('disableStartP'));
-            const disableEndInput: HTMLInputElement = NyaAs.input(NyaDom.byNameFirst('disableEnd'));
-            this.disableEndPicker = new NyaDatePicker(disableEndInput, NyaDom.byId('disableEndP'));
             if (this.isAdd) {
                 const olds: HTMLDivElement[] = NyaDom.byClass('old') as HTMLDivElement[];
                 console.log('olds', olds);
