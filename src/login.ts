@@ -11,7 +11,7 @@ export default class Login {
     api: API = new API();
 
     constructor() {
-        console.log('Login');
+        // console.log('Login');
         window.g_nowurl = 'Login';
         window.g_Title = NyaDom.byClassFirst('mdui-typo-title');
         window.g_Title.innerHTML = '登录';

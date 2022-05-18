@@ -15,7 +15,7 @@ export default class UserEdit {
     confirmQRCodeGObj: any = null;
 
     constructor() {
-        console.log('UserEdit');
+        // console.log('UserEdit');
         const infoStr: string | null = sessionStorage.getItem('info');
         if (infoStr == '' || infoStr == null || infoStr == 'undefined') {
             this.isAdd = true;
@@ -29,13 +29,13 @@ export default class UserEdit {
             this.templateElement = templateElement;
             if (this.isAdd) {
                 const olds: HTMLDivElement[] = NyaDom.byClass('old') as HTMLDivElement[];
-                console.log('olds', olds);
+                // console.log('olds', olds);
                 olds.forEach((e) => {
                     e.remove();
                 });
             } else {
                 const news: HTMLDivElement[] = NyaDom.byClass('new') as HTMLDivElement[];
-                console.log('news', news);
+                // console.log('news', news);
                 news.forEach((e) => {
                     e.remove();
                 });
@@ -205,7 +205,7 @@ export default class UserEdit {
                     case 'disableEnd':
                         break;
                     case 'password':
-                        if (element.value != null && element.value.length > 3) {
+                        if (element.value != null && element.value.length >= 3) {
                             formData.password = element.value;
                             isShowDialog = true;
                         } else {
@@ -231,12 +231,13 @@ export default class UserEdit {
                         break;
 
                     case 'newpassword':
-                        if (element.value != null && element.value != '') {
+                        if(element.value != null && element.value.length >= 3){
+                            formData.newpassword = element.value;
+                        }else{
                             const npw: HTMLDivElement = NyaDom.byId('npw') as HTMLDivElement;
                             const vnpw: HTMLDivElement = NyaDom.byId('vnpw') as HTMLDivElement;
                             npw.innerText = '密码至少 3 位';
                             vnpw.innerText = '无效的密码';
-                            formData.newpassword = element.value;
                         }
                         break;
                     case 'verifynewpassword':
@@ -260,6 +261,7 @@ export default class UserEdit {
                 }
             });
         }
+        // console.log('isShowDialog',isShowDialog);
         if (isShowDialog) {
             // console.log(formData);
             // console.log(this.info);

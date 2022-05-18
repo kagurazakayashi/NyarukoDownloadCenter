@@ -15,7 +15,7 @@ export default class UserList {
     confirmDeleteObj: any = null;
     confirmQRCodeGObj: any = null;
     nowStart: number = 0;
-    fileNumber: number = 2;
+    fileNumber: number = 10;
 
     constructor() {
         window.g_Title.innerHTML = '用户列表';
@@ -106,7 +106,7 @@ export default class UserList {
                             pagesDiv.innerHTML = ULinnerHTML;
 
                             const lis: HTMLLIElement[] = NyaDom.dom('li', pagesDiv) as HTMLLIElement[];
-                            console.log(lis);
+                            // console.log(lis);
                             lis.forEach((ele: HTMLLIElement) => {
                                 switch (ele.innerText) {
                                     case '上一页':

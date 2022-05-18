@@ -18,10 +18,10 @@ export default class UserFileList {
     ulProgT: HTMLDivElement | null = null;
     netUpload: XMLHttpRequest | null = null;
     nowStart: number = 0;
-    fileNumber: number = 3;
+    fileNumber: number = 10;
 
     constructor() {
-        console.log('UserFileList');
+        // console.log('UserFileList');
         const infoStr: string | null = sessionStorage.getItem('info');
         let info: any = {};
         if (infoStr == '' || infoStr == null || infoStr == 'undefined') {
@@ -105,7 +105,7 @@ export default class UserFileList {
         this.api.netWork(url, arg, true, (data) => {
             if (data != null) {
                 let redata: any = JSON.parse(data.response);
-                console.log(data.response);
+                // console.log(data.response);
                 if (data.status == 200) {
                     const listData = redata['data']['data'];
                     const offset = redata['data']['offset'];
@@ -131,7 +131,7 @@ export default class UserFileList {
                         pagesDiv.innerHTML = ULinnerHTML;
 
                         const lis: HTMLLIElement[] = NyaDom.dom('li', pagesDiv) as HTMLLIElement[];
-                        console.log(lis);
+                        // console.log(lis);
                         lis.forEach((ele: HTMLLIElement) => {
                             switch (ele.innerText) {
                                 case '上一页':
@@ -235,7 +235,7 @@ export default class UserFileList {
                         var reader = new FileReader();
                         reader.readAsText(blob, 'utf8'); // 转换为base64，可以直接放入a表情href
                         reader.onload = (e) => {
-                            console.log(reader.result);
+                            // console.log(reader.result);
                             var msg = JSON.parse(reader.result as string);
                             const inst = new mdui.Dialog('#errDialog');
                             inst.open();
