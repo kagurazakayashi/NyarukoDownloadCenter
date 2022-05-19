@@ -18,6 +18,10 @@ export default class API {
         creation_date: 'creation_date',
         modification_date: 'modification_date',
         click: 'click',
+        type: 'type',
+        icon: 'icon',
+        namestyle: 'namestyle',
+        btnstyle: 'btnstyle',
     };
 
     urlhref(toPage: string) {

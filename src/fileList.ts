@@ -5,6 +5,7 @@ import NyaAs from './nyalib/nyaas';
 import NyaDom from './nyalib/nyadom';
 import NyaEvent from './nyalib/nyaevent';
 import NyaNetwork from './nyalib/nyanetwork';
+import NyaStorage from './nyalib/nyastorage';
 import NyaStrings from './nyalib/nyastrings';
 import { NyaTemplateElement } from './nyalib/nyatemplate';
 import NyaTime from './nyalib/nyatime';
@@ -18,7 +19,19 @@ export default class UserFileList {
     ulProgT: HTMLDivElement | null = null;
     netUpload: XMLHttpRequest | null = null;
     nowStart: number = 0;
-    fileNumber: number = 10;
+    fileNumber: number = 65536;
+    extLib: (string | string[])[][] = [
+        [['jpg', 'jpeg', 'png', 'gif', 'tif', 'tiff', 'jfif', 'webp', 'bmp'], '图片文件', 'image'],
+        [['mp4', 'mov', 'mkv', 'flv'], '视频文件', 'videocam'],
+        [['mp3', 'wav', 'flac'], '音频文件', 'audiotrack'],
+        [['exe', 'bat', 'sh'], '可执行文件', 'settings_applications'],
+        [['txt', 'md', 'pdf', 'doc', 'docx'], '文字文档', 'description'],
+        [['xls', 'xlsx', 'csv'], '电子表格', 'view_list'],
+        [['ppt', 'pptx', 'pps'], '幻灯片', 'video_library'],
+        [['zip', 'rar', '7z', 'xz', 'gz'], '压缩包', 'archive'],
+        [['c', 'h', 'cs', 'py', 'go', 'dart', 'js'], '代码文件', 'code'],
+        [['json', 'ini', 'conf', 'xml'], '配置文件', 'build'],
+    ];
 
     constructor() {
         // console.log('UserFileList');
@@ -102,12 +115,16 @@ export default class UserFileList {
             offset: this.nowStart,
             rows: this.fileNumber,
         };
+        console.log('发送请求', url, arg);
         this.api.netWork(url, arg, true, (data) => {
+            console.log('data.response', data?.response);
             if (data != null) {
                 let redata: any = JSON.parse(data.response);
                 // console.log(data.response);
                 if (data.status == 200) {
-                    const listData = redata['data']['data'];
+                    NyaStorage.setString('fileList', data.response, false);
+                    NyaStorage.setString('fileListPath', '/', false);
+                    const listData = redata['data']['data']; // 文件列表数据 1:{...}, 2:{...}
                     const offset = redata['data']['offset'];
                     const rows = redata['data']['rows'];
                     const total = redata['data']['total'];
@@ -169,11 +186,58 @@ export default class UserFileList {
             return;
         }
         let filelist: any[] = [];
-        for (const item of data) {
-            const namestyle = 'style="color: ' + (item.exist == 1 ? 'black' : 'gray; text-decoration:line-through') + ';"';
+        let dirListTmp: any[] = [];
+        for (const dirList in data) {
+            const dir: any[] = data[dirList];
+            if (dirList == 'fileList') {
+                // 找到一個當前資料夾的檔案列表
+                dirListTmp = dir; // 暫存檔案列表，資料夾處理完後再處理檔案列表
+            } else {
+                // 這是一個資料夾
+                html += this.templateElement?.codeByID('row', [
+                    [this.api.str.icon, 'folder'],
+                    [this.api.str.namestyle, ''],
+                    [this.api.str.btnstyle, 'style="display:none;"'],
+                    [this.api.str.name, dirList],
+                    [this.api.str.describe, ''],
+                    [this.api.str.locale, ''],
+                    [this.api.str.type, '文件夹'],
+                    [this.api.str.creation_date, ''],
+                    [this.api.str.modification_date, ''],
+                ],true);
+            }
+        }
+        for (const item of dirListTmp) {
+            const namestyle: string = 'style="color: ' + (item.exist == 1 ? 'black' : 'gray; text-decoration:line-through') + ';"';
+            let extIcon:string = 'insert_drive_file';
+            let extText:string = '';
+            const fileName = item.name as string;
+            const extNameArr = fileName.split('.');
+            if (extNameArr.length >= 2) {
+                const extName = extNameArr[extNameArr.length - 1];
+                extText = extName + ' 文件';
+                for (const extConf of this.extLib) {
+                    const extConfExts:string[] = extConf[0] as string[];
+                    let isExt = false;
+                    for (const nowExt of extConfExts) {
+                        if (nowExt == extName.toLowerCase()) {
+                            isExt = true;
+                            break;
+                        }
+                    }
+                    if (isExt) {
+                        extText = extName.toUpperCase() + ' ' + extConf[1];
+                        extIcon = extConf[2] as string;
+                        break;
+                    }
+                }
+            }
             html += this.templateElement?.codeByID('row', [
-                ['namestyle', namestyle],
-                [this.api.str.name, item.name],
+                [this.api.str.icon, extIcon],
+                [this.api.str.namestyle, namestyle],
+                [this.api.str.btnstyle, ''],
+                [this.api.str.type, extText],
+                [this.api.str.name, fileName],
                 [this.api.str.describe, item.describe.length ? item.describe : '无'],
                 [this.api.str.locale, window.g_LocaleList[item.locale_code][1]],
                 [this.api.str.creation_date, NyaTime.timeStamp2timeString(item.creation_date, 5)],

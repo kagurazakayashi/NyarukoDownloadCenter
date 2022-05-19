@@ -54,13 +54,13 @@
     <table class="mdui-table">
         <thead>
             <tr>
-                <th></th>
                 <th>文件名</th>
                 <th>描述</th>
                 <th>语言</th>
+                <th>类型</th>
                 <th>创建时间</th>
                 <!-- <th>修改时间</th> -->
-                <th></th>
+                <th>操作</th>
             </tr>
         </thead>
         <tbody id="fileListBody"></tbody>
@@ -108,18 +108,20 @@
 <template id="row">
     <tr>
         <td style="display: none"></td>
-        <td>
-            <button class="mdui-btn mdui-btn-icon flbtnDownload">
-                <i class="mdui-icon material-icons">file_download</i>
-            </button>
-        </td>
-        <td {{ namestyle }}>{{ name }}</td>
+        <td><button class="mdui-btn mdui-btn-icon">
+                <i class="mdui-icon material-icons">{{ icon }}</i>
+            </button><span>&emsp;</span><span {{ namestyle }}></span>{{ name }}</td>
         <td>{{ describe }}</td>
         <td>{{ locale }}</td>
+        <td>{{ type }}</td>
         <td>{{ creation_date }}</td>
         <!-- <td>{{ modification_date }}</td> -->
-        <td>
-            <button class="mdui-btn mdui-btn-icon flbtnDelete" mdui-dialog="{target: '#deleteDialog'}">
+        <td class="btnTd">
+            <button class="mdui-btn mdui-btn-icon flbtnDownload" {{ btnstyle }}>
+                <i class="mdui-icon material-icons">file_download</i>
+            </button>
+            <span>&emsp;</span>
+            <button class="mdui-btn mdui-btn-icon flbtnDelete" mdui-dialog="{target: '#deleteDialog'}" {{ btnstyle }}>
                 <i class="mdui-icon material-icons">delete</i>
             </button>
         </td>
