@@ -3,7 +3,7 @@ import API from './API';
 import Login from './login';
 import NyaAs from './nyalib/nyaas';
 import NyaDom from './nyalib/nyadom';
-import NyaEvent from './nyalib/nyaevent';
+import NyaEvent, { NyaEventListener } from './nyalib/nyaevent';
 import NyaNetwork from './nyalib/nyanetwork';
 import NyaStorage from './nyalib/nyastorage';
 import NyaStrings from './nyalib/nyastrings';
@@ -32,6 +32,10 @@ export default class UserFileList {
         [['c', 'h', 'cs', 'py', 'go', 'dart', 'js'], '代码文件', 'code'],
         [['json', 'ini', 'conf', 'xml'], '配置文件', 'build'],
     ];
+    vPath: string = '/';
+    vPathBar: HTMLDivElement | null = null;
+    vPathEvent: NyaEventListener | null = null;
+    events:NyaEventListener[]=[];
 
     constructor() {
         // console.log('UserFileList');
@@ -65,6 +69,7 @@ export default class UserFileList {
                 NyaDom.byId('disStrTime').innerText = ctime;
                 ctime = this.userInfo['disable_enddate'] > 0 ? NyaTime.timeStamp2timeString(this.userInfo['disable_enddate']) : '-';
                 NyaDom.byId('disEndTime').innerText = ctime;
+                this.vPathBar = NyaAs.div(NyaDom.byId('vPathBar'));
 
                 const selectLocale: HTMLSelectElement = NyaDom.byId('locale') as HTMLSelectElement;
                 selectLocale.innerHTML = '';
@@ -74,9 +79,12 @@ export default class UserFileList {
                         selectLocale.innerHTML += '<option value="' + key + '"' + (this.userInfo['locale_code'] == key ? ' selected' : '') + '>' + element[1] + '</option>';
                     }
                 }
-                NyaEvent.addEventListener(NyaDom.byId('btnFileUpload'), () => {
+                const ev: NyaEventListener | null = NyaEvent.addEventListener(NyaDom.byId('btnFileUpload'), () => {
                     this.fileUploadUI();
                 });
+                if (ev) {
+                    this.events.push(ev);
+                }
                 this.getFileList(token);
             }
             mdui.mutation();
@@ -107,7 +115,49 @@ export default class UserFileList {
         }
     }
 
-    getFileList(t: string) {
+    updateVPathBar(vDir: string = '/') {
+        if (this.vPathEvent) {
+            NyaEvent.removeEventListener(this.vPathEvent);
+            this.vPathEvent = null;
+        }
+        if (!this.vPathBar) {
+            return;
+        }
+        this.vPathBar.innerHTML = '';
+        const paths: string[] = vDir.split('/');
+        let nowPath: string = '/';
+        let len: number = 0;
+        for (let i = -1; i < paths.length; i++) {
+            const pa: HTMLButtonElement = NyaAs.button();
+            pa.className = 'mdui-btn mdui-ripple';
+            if (i == paths.length - 1) {
+                pa.className += ' mdui-color-theme-accent';
+            }
+            if (i < 0) {
+                pa.innerText = '根目录';
+            } else {
+                const pathUnit = paths[i];
+                if (pathUnit.length == 0) {
+                    continue;
+                }
+                nowPath += '/' + pathUnit;
+                pa.innerText = pathUnit;
+            }
+            nowPath = nowPath.replace('//','');
+            pa.title = nowPath;
+            const icoRight = document.createElement('i');
+            icoRight.innerText = 'chevron_right';
+            icoRight.className = 'mdui-icon material-icons';
+            pa.appendChild(icoRight);
+            NyaEvent.addEventListener(pa,()=>{
+                this.genFileList(nowPath);
+            });
+            this.vPathBar.appendChild(pa);
+            len++;
+        }
+    }
+
+    getFileList(t: string, vDir: string = '/') {
         const url: string = window.g_url + 'fileList/';
         const arg = {
             t: t,
@@ -115,15 +165,13 @@ export default class UserFileList {
             offset: this.nowStart,
             rows: this.fileNumber,
         };
-        console.log('发送请求', url, arg);
         this.api.netWork(url, arg, true, (data) => {
-            console.log('data.response', data?.response);
             if (data != null) {
                 let redata: any = JSON.parse(data.response);
-                // console.log(data.response);
                 if (data.status == 200) {
                     NyaStorage.setString('fileList', data.response, false);
                     NyaStorage.setString('fileListPath', '/', false);
+                    this.updateVPathBar(vDir);
                     const listData = redata['data']['data']; // 文件列表数据 1:{...}, 2:{...}
                     const offset = redata['data']['offset'];
                     const rows = redata['data']['rows'];
@@ -170,7 +218,7 @@ export default class UserFileList {
                             }
                         });
                     }
-                    this.genFileList(listData);
+                    this.genFileList();
                 } else {
                     this.api.errHandle(redata['code']);
                 }
@@ -180,44 +228,65 @@ export default class UserFileList {
         });
     }
 
-    genFileList(data: any[]) {
+    genFileList(path: string = '/') {
+        console.log('genFileList',path);
+        const json: string = NyaStorage.getString('fileList');
+        if (json.length == 0) {
+            return;
+        }
+        let redata: any = JSON.parse(json);
+        const listData = redata['data']['data'];
+        const pathArr: string[] = path.split('/');
+        let data = listData;
+        for (const nowPath of pathArr) {
+            if (nowPath == undefined || nowPath.length == 0) {
+                continue;
+            }
+            data = data[nowPath];
+        }
         let html: string = '';
         if (data == null || data.length <= 0) {
             return;
         }
         let filelist: any[] = [];
-        let dirListTmp: any[] = [];
+        let dirFileListTmp: any[] = [];
+        let dirListTmp: string[] = [];
         for (const dirList in data) {
             const dir: any[] = data[dirList];
             if (dirList == 'fileList') {
                 // 找到一個當前資料夾的檔案列表
-                dirListTmp = dir; // 暫存檔案列表，資料夾處理完後再處理檔案列表
+                dirFileListTmp = dir; // 暫存檔案列表，資料夾處理完後再處理檔案列表
             } else {
+                dirListTmp.push(dirList);
                 // 這是一個資料夾
-                html += this.templateElement?.codeByID('row', [
-                    [this.api.str.icon, 'folder'],
-                    [this.api.str.namestyle, ''],
-                    [this.api.str.btnstyle, 'style="display:none;"'],
-                    [this.api.str.name, dirList],
-                    [this.api.str.describe, ''],
-                    [this.api.str.locale, ''],
-                    [this.api.str.type, '文件夹'],
-                    [this.api.str.creation_date, ''],
-                    [this.api.str.modification_date, ''],
-                ],true);
+                html += this.templateElement?.codeByID(
+                    'row',
+                    [
+                        [this.api.str.icon, 'folder'],
+                        [this.api.str.namestyle, ''],
+                        [this.api.str.btnstyle, 'style="display:none;"'],
+                        [this.api.str.name, dirList],
+                        [this.api.str.describe, ''],
+                        [this.api.str.locale, ''],
+                        [this.api.str.type, '文件夹'],
+                        [this.api.str.creation_date, ''],
+                        [this.api.str.modification_date, ''],
+                    ],
+                    true
+                );
             }
         }
-        for (const item of dirListTmp) {
+        for (const item of dirFileListTmp) {
             const namestyle: string = 'style="color: ' + (item.exist == 1 ? 'black' : 'gray; text-decoration:line-through') + ';"';
-            let extIcon:string = 'insert_drive_file';
-            let extText:string = '';
+            let extIcon: string = 'insert_drive_file';
+            let extText: string = '';
             const fileName = item.name as string;
             const extNameArr = fileName.split('.');
             if (extNameArr.length >= 2) {
                 const extName = extNameArr[extNameArr.length - 1];
                 extText = extName + ' 文件';
                 for (const extConf of this.extLib) {
-                    const extConfExts:string[] = extConf[0] as string[];
+                    const extConfExts: string[] = extConf[0] as string[];
                     let isExt = false;
                     for (const nowExt of extConfExts) {
                         if (nowExt == extName.toLowerCase()) {
@@ -244,33 +313,86 @@ export default class UserFileList {
                 [this.api.str.modification_date, NyaTime.timeStamp2timeString(item.modification_date, 5)],
             ]);
             filelist.push(item);
+            this.updateVPathBar(path);
         }
 
         NyaDom.byId('fileListBody').innerHTML = html.length > 0 ? html : '<p>没有文件</p>';
 
-        const btnDownloads: HTMLButtonElement[] | null = NyaDom.byClass('flbtnDownload') as HTMLButtonElement[] | null;
-        const btnDeletes: HTMLButtonElement[] | null = NyaDom.byClass('flbtnDelete') as HTMLButtonElement[] | null;
+        let btnDownloads: HTMLButtonElement[] | null = NyaDom.byClass('flbtnDownload') as HTMLButtonElement[] | null;
+        let btnDeletes: HTMLButtonElement[] | null = NyaDom.byClass('flbtnDelete') as HTMLButtonElement[] | null;
+        let btnIcos: HTMLButtonElement[] | null = NyaDom.byClass('flbtnIco') as HTMLButtonElement[] | null;
+        if (btnDownloads == null || btnDeletes == null || btnIcos == null) {
+            return;
+        }
+        btnDownloads = NyaDom.removeHiddenElement(btnDownloads) as HTMLButtonElement[];
+        btnDeletes = NyaDom.removeHiddenElement(btnDeletes) as HTMLButtonElement[];
+        btnIcos = NyaDom.removeHiddenElement(btnIcos) as HTMLButtonElement[];
         for (let i = 0; i < filelist.length; i++) {
             const file = filelist[i];
-            if (btnDownloads != null && btnDownloads.length > i) {
+            if (btnDownloads.length > i) {
                 const btnDL: HTMLButtonElement = btnDownloads[i];
                 NyaEvent.addEventListener(btnDL, () => {
                     this.downLoad(file);
                 });
             }
-            if (btnDeletes != null && btnDeletes.length > i) {
+            if (btnDeletes.length > i) {
                 const btnDel: HTMLButtonElement = btnDeletes[i];
                 NyaEvent.addEventListener(btnDel, () => {
-                    this.deleteFile(file);
+                    this.deleteFile(file, path);
                 });
             }
         }
+        const folderIcos: HTMLButtonElement[] = [];
+        const fileIcos: HTMLButtonElement[] = [];
+        for (const btnIco of btnIcos) {
+            const idoms: HTMLCollectionOf<HTMLElement> = btnIco.getElementsByTagName('i');
+            for (const key in idoms) {
+                if (Object.prototype.hasOwnProperty.call(idoms, key)) {
+                    const i = idoms[key];
+                    if (i.innerText == 'folder') {
+                        folderIcos.push(btnIco);
+                    } else {
+                        fileIcos.push(btnIco);
+                    }
+                }
+                break;
+            }
+        }
+        for (let j = 0; j < folderIcos.length; j++) {
+            const btnIco: HTMLButtonElement = folderIcos[j];
+            const file: string = dirListTmp[j];
+            let nPath = path + '/' + file;
+            nPath = nPath.replace('//','/');
+            btnIco.title = '打开文件夹 ' + nPath;
+            NyaEvent.addEventListener(btnIco, () => {
+                this.btnIcoClick(file, path);
+            });
+        }
+        for (let j = 0; j < fileIcos.length; j++) {
+            const btnIco: HTMLButtonElement = fileIcos[j];
+            const file: any = dirFileListTmp[j];
+            let nPath = path+ '/' + file.name;
+            nPath = nPath.replace('//','/');
+            btnIco.title = '下载文件 ' + nPath;
+            NyaEvent.addEventListener(btnIco, () => {
+                this.downLoad(file);
+            });
+        }
     }
 
-    downLoad(fhash: string) {
+    btnIcoClick(name: string, path: string) {
+        this.genFileList((path + '/' + name).replace('//','/'));
+    }
+
+    downLoad(file: any) {
+        const nameFile = file[this.api.str.name];
+        mdui.snackbar({
+            message: '<i class="mdui-icon material-icons">arrow_downward</i> 正在后台下载：' + nameFile,
+            position: 'left-bottom',
+        });
         this.api.netWork(
             window.g_url + 'fileDownload/',
-            { fh: fhash[this.api.str.hash], path: 1 },
+            { fh: file[this.api.str.hash], path: 1 },
             true,
             (data) => {
                 if (data != null) {
@@ -284,12 +406,10 @@ export default class UserFileList {
                                 return;
                             }
                             // 转换完成，创建一个a标签用于下载
-                            var a: HTMLAnchorElement = document.createElement('a');
-
-                            var nameFile = fhash[this.api.str.name];
+                            const a: HTMLAnchorElement = document.createElement('a');
                             a.download = nameFile;
                             a.href = e.target.result as string;
-                            var dwdiv = NyaDom.byId('dw');
+                            const dwdiv = NyaDom.byId('dw');
                             dwdiv.append(a); // 修复firefox中无法触发click
                             a.click();
                             dwdiv.innerHTML = '';
@@ -324,39 +444,20 @@ export default class UserFileList {
         );
     }
 
-    deleteFile(info: any) {
-        const deleteDialog: HTMLDivElement = NyaDom.byId('deleteDialog') as HTMLDivElement;
-        const dialogContent: HTMLDivElement[] = NyaDom.dom('.mdui-dialog-content', deleteDialog) as HTMLDivElement[];
-
-        dialogContent.forEach((element) => {
-            element.innerHTML = '是否删除文件：' + info[this.api.str.name] + ' ?';
-        });
-
-        const that = this;
-        const obj = {
-            uhash: this.userInfo[this.api.str.hash],
-            fh: info[this.api.str.hash],
-        };
-        const elistener = {
-            uhash: '',
-            fh: '',
-            fuc() {
-                that.api.netWork(window.g_url + 'fileDelete/', { uhash: this.uhash, fh: this.fh }, true, (data) => {
-                    if (data != null) {
-                        const redata = JSON.parse(data.response);
-                        // console.log(redata);
-                        if (data.status === 200) {
-                            //TODO:成功
-                        } else {
-                            alert(redata.msg);
-                        }
+    deleteFile(file: any, path: string) {
+        const dialogTexts: string[] = ['要删除这个文件吗？', '完整路径：' + path + '/' + file.name, '描述：' + (file.describe.length > 0 ? file.describe : '无'), '语言：' + file.locale_code, '创建时间：' + NyaTime.timeStamp2timeString(file.modification_date)];
+        mdui.confirm(dialogTexts.join('<br/>'), '删除文件：' + file.name, () => {
+            this.api.netWork(window.g_url + 'fileDelete/', { uhash: file.uhash, fh: file.fh }, true, (data) => {
+                if (data != null) {
+                    const redata = JSON.parse(data.response);
+                    if (data.status === 200) {
+                        //TODO:删除成功
+                    } else {
+                        mdui.alert(redata.msg, '删除失败');
                     }
-                });
-            },
-        };
-        deleteDialog.removeEventListener('confirm', this.confirmDeleteObj);
-        this.confirmDeleteObj = elistener.fuc.bind(obj);
-        deleteDialog.addEventListener('confirm', this.confirmDeleteObj);
+                }
+            });
+        });
     }
 
     fileUploadUI() {
