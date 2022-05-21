@@ -34,8 +34,8 @@ export default class UserFileList {
     ];
     vPath: string = '/';
     vPathBar: HTMLDivElement | null = null;
-    vPathEvent: NyaEventListener | null = null;
-    events:NyaEventListener[]=[];
+    events0: NyaEventListener[] = [];
+    events1: NyaEventListener[] = [];
 
     constructor() {
         // console.log('UserFileList');
@@ -83,7 +83,7 @@ export default class UserFileList {
                     this.fileUploadUI();
                 });
                 if (ev) {
-                    this.events.push(ev);
+                    this.events0.push(ev);
                 }
                 this.getFileList(token);
             }
@@ -116,10 +116,6 @@ export default class UserFileList {
     }
 
     updateVPathBar(vDir: string = '/') {
-        if (this.vPathEvent) {
-            NyaEvent.removeEventListener(this.vPathEvent);
-            this.vPathEvent = null;
-        }
         if (!this.vPathBar) {
             return;
         }
@@ -143,15 +139,16 @@ export default class UserFileList {
                 nowPath += '/' + pathUnit;
                 pa.innerText = pathUnit;
             }
-            nowPath = nowPath.replace('//','');
+            nowPath = nowPath.replace('//', '');
             pa.title = nowPath;
             const icoRight = document.createElement('i');
             icoRight.innerText = 'chevron_right';
             icoRight.className = 'mdui-icon material-icons';
             pa.appendChild(icoRight);
-            NyaEvent.addEventListener(pa,()=>{
+            const ev: NyaEventListener | null = NyaEvent.addEventListener(pa, () => {
                 this.genFileList(nowPath);
             });
+            if (ev) this.events1.push(ev);
             this.vPathBar.appendChild(pa);
             len++;
         }
@@ -229,7 +226,8 @@ export default class UserFileList {
     }
 
     genFileList(path: string = '/') {
-        console.log('genFileList',path);
+        NyaEvent.removeEventListeners(this.events1);
+        this.events1 = [];
         const json: string = NyaStorage.getString('fileList');
         if (json.length == 0) {
             return;
@@ -331,15 +329,17 @@ export default class UserFileList {
             const file = filelist[i];
             if (btnDownloads.length > i) {
                 const btnDL: HTMLButtonElement = btnDownloads[i];
-                NyaEvent.addEventListener(btnDL, () => {
+                const ev: NyaEventListener | null = NyaEvent.addEventListener(btnDL, () => {
                     this.downLoad(file);
                 });
+                if (ev) this.events1.push(ev);
             }
             if (btnDeletes.length > i) {
                 const btnDel: HTMLButtonElement = btnDeletes[i];
-                NyaEvent.addEventListener(btnDel, () => {
+                const ev: NyaEventListener | null = NyaEvent.addEventListener(btnDel, () => {
                     this.deleteFile(file, path);
                 });
+                if (ev) this.events1.push(ev);
             }
         }
         const folderIcos: HTMLButtonElement[] = [];
@@ -362,26 +362,28 @@ export default class UserFileList {
             const btnIco: HTMLButtonElement = folderIcos[j];
             const file: string = dirListTmp[j];
             let nPath = path + '/' + file;
-            nPath = nPath.replace('//','/');
+            nPath = nPath.replace('//', '/');
             btnIco.title = '打开文件夹 ' + nPath;
-            NyaEvent.addEventListener(btnIco, () => {
+            const ev: NyaEventListener | null = NyaEvent.addEventListener(btnIco, () => {
                 this.btnIcoClick(file, path);
             });
+            if (ev) this.events1.push(ev);
         }
         for (let j = 0; j < fileIcos.length; j++) {
             const btnIco: HTMLButtonElement = fileIcos[j];
             const file: any = dirFileListTmp[j];
-            let nPath = path+ '/' + file.name;
-            nPath = nPath.replace('//','/');
+            let nPath = path + '/' + file.name;
+            nPath = nPath.replace('//', '/');
             btnIco.title = '下载文件 ' + nPath;
-            NyaEvent.addEventListener(btnIco, () => {
+            const ev: NyaEventListener | null = NyaEvent.addEventListener(btnIco, () => {
                 this.downLoad(file);
             });
+            if (ev) this.events1.push(ev);
         }
     }
 
     btnIcoClick(name: string, path: string) {
-        this.genFileList((path + '/' + name).replace('//','/'));
+        this.genFileList((path + '/' + name).replace('//', '/'));
     }
 
     downLoad(file: any) {
