@@ -60,6 +60,7 @@
                 <th>文件名</th>
                 <th>描述</th>
                 <th>语言</th>
+                <th>大小</th>
                 <th>类型</th>
                 <th>创建时间</th>
                 <!-- <th>修改时间</th> -->
@@ -91,6 +92,10 @@
                 <input type="file" name="file" id="fuDialogFile" />
             </div>
             <p>&emsp;</p>
+            <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom " id="username">
+                <label class="mdui-textfield-label">上传路径</label>
+                <input class="mdui-textfield-input" id="dir" name="dir" type="text" value="" required />
+            </div>
             <div>
                 <label class="mdui-label">语言&emsp;</label>
                 <select class="mdui-select item" id="locale" name="locale" mdui-select></select>
@@ -115,10 +120,11 @@
             <button class="mdui-btn mdui-btn-icon flbtnIco">
                 <i class="mdui-icon material-icons">{{ icon }}</i>
             </button>
-            <span>&emsp;</span><span {{ namestyle }}>{{ name }}</span>
+            <span class="flName" {{ namestyle }}>{{ name }}</span>
         </td>
         <td>{{ describe }}</td>
         <td>{{ locale }}</td>
+        <td>{{ size }}</td>
         <td>{{ type }}</td>
         <td>{{ creation_date }}</td>
         <!-- <td>{{ modification_date }}</td> -->
