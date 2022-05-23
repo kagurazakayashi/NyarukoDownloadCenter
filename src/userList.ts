@@ -7,7 +7,7 @@ import NyaNetwork from './nyalib/nyanetwork';
 import { NyaTemplateElement } from './nyalib/nyatemplate';
 import QRCode from 'qrcode-generator';
 import NyaTime from './nyalib/nyatime';
-import NyaEvent from './nyalib/nyaevent';
+import NyaEvent, { NyaEventListener } from './nyalib/nyaevent';
 
 export default class UserList {
     templateElement: NyaTemplateElement | null = null;
@@ -16,6 +16,7 @@ export default class UserList {
     confirmQRCodeGObj: any = null;
     nowStart: number = 0;
     fileNumber: number = 10;
+    events: NyaEventListener[] = [];
 
     constructor() {
         window.g_Title.innerHTML = '用户列表';
@@ -86,6 +87,7 @@ export default class UserList {
                         const offset = redata['data']['offset'];
                         const rows = redata['data']['rows'];
                         const total = redata['data']['total'];
+                        NyaEvent.removeEventListeners(this.events);
                         if (listData.length < total) {
                             let pagesDiv: HTMLUListElement = NyaDom.byId('pageNumber') as HTMLUListElement;
                             let ULinnerHTML = '<ul>';
@@ -110,20 +112,23 @@ export default class UserList {
                             lis.forEach((ele: HTMLLIElement) => {
                                 switch (ele.innerText) {
                                     case '上一页':
-                                        ele.addEventListener(this.api.str.click, () => {
+                                        const ev1: NyaEventListener | null = NyaEvent.addEventListener(ele, () => {
                                             this.turning(-1);
                                         });
+                                        if (ev1) this.events.push(ev1);
                                         break;
                                     case '下一页':
-                                        ele.addEventListener(this.api.str.click, () => {
+                                        const ev2: NyaEventListener | null = NyaEvent.addEventListener(ele, () => {
                                             this.turning(1);
                                         });
+                                        if (ev2) this.events.push(ev2);
                                         break;
 
                                     default:
-                                        ele.addEventListener(this.api.str.click, () => {
+                                        const ev3: NyaEventListener | null = NyaEvent.addEventListener(ele, () => {
                                             this.jumppage(ele.innerText);
                                         });
+                                        if (ev3) this.events.push(ev3);
                                         break;
                                 }
                             });
@@ -142,6 +147,7 @@ export default class UserList {
                         });
                         NyaDom.byId('userListBody').innerHTML = tabStr;
                         const btninfos: HTMLButtonElement[] = NyaDom.byClass('ulbtninfo') as HTMLButtonElement[];
+                        const btnnames: HTMLSpanElement[] = NyaDom.byClass('ulbtnname') as HTMLSpanElement[];
                         const btnqrs: HTMLButtonElement[] = NyaDom.byClass('ulbtnqr') as HTMLButtonElement[];
                         const btnEdits: HTMLButtonElement[] = NyaDom.byClass('ulbtnedit') as HTMLButtonElement[];
                         const btndeletes: HTMLButtonElement[] = NyaDom.byClass('ulbtndelete') as HTMLButtonElement[];
@@ -149,21 +155,30 @@ export default class UserList {
                             const elInfo: string = infos[i];
                             const that = this;
                             const elbtninfo: HTMLButtonElement = btninfos[i];
-                            elbtninfo.addEventListener(this.api.str.click, function () {
+                            const elbtnname: HTMLSpanElement = btnnames[i];
+                            const ev1: NyaEventListener | null = NyaEvent.addEventListener(elbtninfo, function () {
                                 that.userInfo(elInfo);
                             });
+                            if (ev1) this.events.push(ev1);
+                            const ev2: NyaEventListener | null = NyaEvent.addEventListener(elbtnname, function () {
+                                that.userInfo(elInfo);
+                            });
+                            if (ev2) this.events.push(ev2);
                             const elbtnqr: HTMLButtonElement = btnqrs[i];
-                            elbtnqr.addEventListener(this.api.str.click, function () {
+                            const ev3: NyaEventListener | null = NyaEvent.addEventListener(elbtnqr, function () {
                                 that.qrcodeGenerator(elInfo);
                             });
+                            if (ev3) this.events.push(ev3);
                             const elbtnEdit: HTMLButtonElement = btnEdits[i];
-                            elbtnEdit.addEventListener(this.api.str.click, function () {
+                            const ev4: NyaEventListener | null = NyaEvent.addEventListener(elbtnEdit, function () {
                                 that.userEdit(elInfo);
                             });
+                            if (ev4) this.events.push(ev4);
                             const elbtndeletes: HTMLButtonElement = btndeletes[i];
-                            elbtndeletes.addEventListener(this.api.str.click, function () {
+                            const ev5: NyaEventListener | null = NyaEvent.addEventListener(elbtndeletes, function () {
                                 that.userDelete(elInfo);
                             });
+                            if (ev5) this.events.push(ev5);
                         }
                     } else {
                         this.api.errHandle(redata['code']);
@@ -219,7 +234,7 @@ export default class UserList {
                         if (data != null) {
                             if (data.status === 200) {
                                 setTimeout(() => {
-                                    const url = window.g_QRurl + '#u=' + username + '&p=' + password + '&l=' + locale;
+                                    const url = window.g_QRurl + '#/' + locale + '/f/' + username + '/' + password + '/-';
                                     const qr: QRCode = QRCode(5, 'L');
                                     qr.addData(url, 'Byte');
                                     qr.make();
