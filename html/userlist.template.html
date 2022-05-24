@@ -6,14 +6,11 @@
             <thead>
                 <tr>
                     <th style="display: none">hash</th>
-                    <th></th>
                     <th>用户名</th>
                     <th>昵称</th>
                     <th>权限</th>
                     <th>创建时间</th>
                     <th>修改时间</th>
-                    <th></th>
-                    <th></th>
                     <th></th>
                 </tr>
             </thead>
@@ -29,7 +26,8 @@
         <div class="mdui-dialog-content" id="qrGeneratorDialog-content">
             <p>&emsp;</p>
             <div class="mdui-textfield mdui-textfield-floating-label mdui-textfield-has-bottom">
-                <label class="mdui-textfield-label">密码</label><input class="mdui-textfield-input item" name="password" type="password" required="" />
+                <label class="mdui-textfield-label">密码</label><input class="mdui-textfield-input item" name="password"
+                    type="password" required="" />
                 <div class="mdui-textfield-error">密码不能为空</div>
             </div>
             <p>&emsp;</p>
@@ -48,7 +46,7 @@
     <div class="mdui-dialog" id="deleteDialog">
         <div class="mdui-dialog-title">是否删除此用户</div>
         <div class="mdui-dialog-content"></div>
-        <div class="mdui-dialog-actions mdui-dialog-actions-stacked">
+        <div class="mdui-dialog-actions">
             <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确定</button>
             <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
         </div>
@@ -59,7 +57,7 @@
             <div>该二维码包含用户名和密码以自动登录，请勿将私有账户的二维码共享。</div>
             <div id="qrcode"></div>
         </div>
-        <div class="mdui-dialog-actions mdui-dialog-actions-stacked">
+        <div class="mdui-dialog-actions">
             <a class="mdui-btn mdui-ripple" id="qrCodeDL" mdui-dialog-confirm>下载二维码图片</a>
             <button class="mdui-btn mdui-ripple" mdui-dialog-close>返回</button>
         </div>
@@ -73,10 +71,10 @@
         <td style="display: none"></td>
         <td>
             <button class="mdui-btn mdui-btn-icon ulbtninfo" mdui-tooltip="{content: '管理文件'}">
-                <i class="mdui-icon material-icons">account_circle</i>
+                <i class="mdui-icon material-icons">folder_shared</i>
             </button>
+            <span class="ulbtnname">{{ username }}</span>
         </td>
-        <td>{{ username }}</td>
         <td>{{ nickname }}</td>
         <td>{{ describe }}</td>
         <td>{{ creation_date }}</td>
@@ -85,16 +83,13 @@
             <button class="mdui-btn mdui-btn-icon ulbtnqr" mdui-dialog="{target: '#qrGeneratorDialog'}">
                 <i class="mdui-icon material-icons" mdui-tooltip="{content: '创建快捷登录二维码'}">center_focus_weak</i>
             </button>
-        </td>
-        <td>
+            <span>&emsp;</span>
             <button class="mdui-btn mdui-btn-icon ulbtnedit">
                 <i class="mdui-icon material-icons">edit</i>
             </button>
-        </td>
-        <td>
+            <span>&emsp;</span>
             <button class="mdui-btn mdui-btn-icon ulbtndelete" mdui-dialog="{target: '#deleteDialog'}">
                 <i class="mdui-icon material-icons">delete</i>
             </button>
-        </td>
     </tr>
 </template>

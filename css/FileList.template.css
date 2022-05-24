@@ -23,3 +23,13 @@
     font-family: Consolas, Monaco, monospace;
     padding-right: 10px;
 }
+
+.flName {
+    color: #000;
+    cursor: pointer;
+}
+
+.flName:hover {
+    color: #00f;
+    text-decoration: underline;
+}
