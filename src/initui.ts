@@ -2,6 +2,7 @@ import NyaDom from './nyalib/nyadom';
 import NyaDebug from './nyalib/nyadebug';
 import Login from './login';
 import API from './API';
+import NyaEvent from './nyalib/nyaevent';
 
 export default class InitUI {
     login: Login = new Login();
@@ -16,6 +17,9 @@ export default class InitUI {
             this.api.jumpPage();
         };
         this.meta();
+        NyaEvent.addEventListener(NyaDom.byId('btnUserList'), () => {
+            window.location.href = "./";
+        });
     }
 
     windowResize() {}

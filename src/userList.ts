@@ -36,7 +36,12 @@ export default class UserList {
                 this.api.urlhref('#/userEdit');
             });
             this.getUserList();
-
+            if (window.g_btnReloadEvent != null) {
+                NyaEvent.removeEventListener(window.g_btnReloadEvent);
+            }
+            window.g_btnReloadEvent = NyaEvent.addEventListener(NyaDom.byId('btnReload'),()=>{
+                this.getUserList();
+            });
             return true;
         });
         mdui.mutation();

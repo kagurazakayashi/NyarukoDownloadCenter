@@ -54,6 +54,9 @@ export default class UserFileList {
         let userShow: string = info['nickname'] == '' ? info['username'] : info['nickname'] + '(' + info['username'] + ')';
         window.g_Title.innerHTML = '管理文件/' + userShow;
         this.userInfo = info;
+        if (window.g_btnReloadEvent != null) {
+            NyaEvent.removeEventListener(window.g_btnReloadEvent);
+        }
         this.api.getTempHTML(this.templateElement, 'FileList.template', (reTemp) => {
             this.templateElement = reTemp;
             const token = sessionStorage.getItem('Token');
@@ -90,6 +93,9 @@ export default class UserFileList {
                     this.events0.push(ev);
                 }
                 this.getFileList(token);
+                window.g_btnReloadEvent = NyaEvent.addEventListener(NyaDom.byId('btnReload'), () => {
+                    this.getFileList(token);
+                });
             }
             mdui.mutation();
             return true;
@@ -434,7 +440,7 @@ export default class UserFileList {
     downLoad(file: any) {
         const nameFile = file[this.api.str.name];
         const downloadSnackbar = mdui.snackbar({
-            message: '<i class="mdui-icon material-icons">arrow_downward</i>&nbsp;正在下载：' + nameFile + '<br/>下载进度: <span id="dlprogress"></span>',
+            message: '<i class="mdui-icon material-icons">arrow_downward</i>&nbsp;正在下载文件，请勿操作网页。文件: ' + nameFile + '<br/>进度: <span id="dlprogress"></span>',
             position: 'left-bottom',
             timeout: 0,
             closeOnOutsideClick: false,

@@ -7,4 +7,5 @@ declare interface Window {
     g_PermissionsList:any;
     g_GroupList:any;
     g_LocaleList:any;
+    g_btnReloadEvent:any=null;
 }
