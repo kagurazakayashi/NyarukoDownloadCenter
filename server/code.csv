@@ -1,0 +1,80 @@
+id,code,en,chs,cht
+1001,200,options through,Options通过,Options通過
+2001,405,Not a post request,不是POST请求,不是POST請求
+2011,400,failed to insert row,插入行失败,插入行失敗
+2040,400,missing parameter,缺少参数,缺少參數
+2041,400,parameter is incorrect,参数不正确,參數不正確
+3000,400,request method is incorrect,请求方式不正确,請求方式不正確
+3900,400,The token has expired,token已失效,token已失效
+3901,400,"The stored token is incorrect, Please login again",存储的token错误，请重新登录,存儲的token錯誤，請重新登入
+3999,400,user does not exist,用户不存在,用戶不存在
+4000,400,please log in first,请先登录,請先登錄
+4001,400,incorrect user name or password,用户名或密码不正确,用戶名或密碼不正確
+4002,400,failed to create token,创建令牌失败,創建令牌失敗
+4003,400,the query did not return a result,查询没有返回结果,查詢沒有返回結果
+4004,400,user does not have permission,用户没有权限,用戶沒有許可權
+4005,400,"login status expired, please login again",登录状态过期，请重新登录,登錄狀態過期，請重新登錄
+4006,400,Logout failed,登出失败,登出失敗
+5000,400,this device is still waiting to respond to the last request. Please try again later. ,还在等待此设备响应上次的请求，请稍后再试。,還在等待此設備響應上次的請求，請稍後再試。
+9000,400,database connection failure,数据库连接失败,資料庫連接失敗
+9001,400,database query failed,数据库查询失败,資料庫查詢失敗
+9009,400,No changes,没有任何更改,冇有任何更改
+9010,400,redis database connection failure,redis服务连接失败,redis服務連接失敗
+9011,400,redis database query failed,redis操作失败,redis操作失敗
+9100,400,cache service connection failed,缓存服务连接失败,緩存服務連接失敗
+9101,400,cache query failed,缓存查询失败,緩存查詢失敗
+9200,400,mqtt service connection failed,MQTT服务连接失败,MQTT服務連接失敗
+9201,400,mqtt operation failed,MQTT操作失败,MQTT操作失敗
+9400,400,File operation failed,文件操作失败,文件操作失敗
+9999,400,system internal error,系统内部错误,系統內部錯誤
+10000,200,OK,成功,成功
+10001,200,OK(null),成功（无数据）,成功（無資料）
+10100,100,Continue,继续,繼續
+10101,101,Switching Protocols,切换协议,切換協議
+10102,102,Processing,正在处理中,正在處理中
+10103,103,Early Hints,预先返回的数据,預先返回的資料
+10200,200,OK,请求成功,请求成功
+10201,201,Created,已创建,已建立
+10202,202,Accepted,已接受,已接受
+10203,203,Non-Authoritative Information,非授权信息,非授權資訊
+10204,204,No Content,无内容,無內容
+10205,205,Reset Content,重置內容,重置內容
+10206,206,Partial Content,部分内容,部分內容
+10300,300,Multiple Choices,多种选择,多種選擇
+10301,301,Moved Permanently,永久移动,永久移動
+10302,302,Found,临时移动,臨時移動
+10303,303,See Other,查看其它地址,檢視其它地址
+10304,304,Not Modified,未修改,未修改
+10305,305,Use Proxy,使用代理,使用代理
+10307,307,Temporary Redirect,临时重定向,臨時重定向
+11101,200,Waiting for user confirmation,等待用户确认,等待用戶確認
+20000,400,Fail,失败,失敗
+20400,400,Bad Request,错误请求,錯誤請求
+20401,401,Unauthorized,要求身份认证,要求身份認證
+21000,400,length over 1000,长度超过1000,長度超過1000
+21001,400,illegal characters,有非法字符,有非法字元
+21002,400,regular judgment failure,正则判断失败,正則判斷失敗
+20403,403,Forbidden,拒绝执行,拒絕執行
+20404,404,Not Found,找不到,找不到
+20405,405,Method Not Allowed,所请求的方法被禁用,所請求的方法被禁用
+20406,406,Not Acceptable,无法根据特性完成请求,無法根據特性完成請求
+20407,407,Proxy Authentication Required,要求代理身份认证,要求代理身份認證
+20408,408,Request Time-out,请求超时,請求超時
+20409,409,Conflict,发生冲突,發生衝突
+20410,410,Gone,已被永久删除,已被永久刪除
+20411,411,Length Required,需要提供请求长度,需要提供請求長度
+20412,412,Precondition Failed,请求不满足先决条件,請求不滿足先決條件
+20413,413,Request Entity Too Large,请求太大,請求太大
+20414,414,Request-URI Too Large,网址过长,網址過長
+20415,415,Unsupported Media Type,不支持的上传文件格式,不支援的上傳檔案格式
+20416,416,Requested range not satisfiable,范围无效,範圍無效
+20417,417,Expectation Failed,无法满足请求头信息,無法滿足請求頭資訊
+20451,451,Unavailable For Legal Reasons,无法满足请求头信息,根據相關法律法規或政策，無法顯示
+20500,500,Internal Server Error,服务器内部错误,伺服器內部錯誤
+20501,501,Not Implemented,不支持请求的功能,不支援請求的功能
+20502,502,Bad Gateway,上级服务器处理失败,上級伺服器處理失敗
+20503,503,Service Unavailable,系统正在维护,系統正在維護
+20504,504,Gateway Time-out,上级服务器响应超时,上級伺服器響應超時
+20505,505,HTTP Version not supported,不支持的协议版本,不支援的協議版本
+21101,400,The login code is invalid and has been regenerated,登录码已失效，已重新生成,登錄碼已失效，已重新生成
+21102,400,QR code generation failed,二维码生成失败,二維碼生成失敗
