@@ -7,6 +7,7 @@ export const key: InjectionKey<Store<State>> = Symbol();
 export const store = createStore<State>({
   state: {
     downloadListVisible: false,
+    loginDialogVisible: false,
     progressList: [],
   },
 });

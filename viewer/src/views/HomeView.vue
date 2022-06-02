@@ -174,14 +174,21 @@ export default defineComponent({
         token == "undefined" ||
         token == null ||
         token == "" ||
-        user != this.$route.params.loc
+        (this.$route.params.u && user != this.$route.params.u)
       ) {
-        this.login(
-          this.$route.params.u as string,
-          this.$route.params.p as string
-        ).then(() => {
+        if (this.$route.params.u && this.$route.params.p) {
+          this.login(
+            this.$route.params.u as string,
+            this.$route.params.p as string
+          ).then(() => {
+            this.getFL();
+          });
+        } else {
+          if (!this.$store.state.loginDialogVisible) {
+            this.$store.state.loginDialogVisible = true;
+          }
           this.getFL();
-        });
+        }
       } else {
         this.getFL();
       }
@@ -313,17 +320,18 @@ export default defineComponent({
         }
       }
       this.tableDatas = trList;
-      // console.log("this.tableDatas", this.tableDatas);
+      // console.log("this.tableDatas", JSON.stringify(this.tableDatas));
     },
 
     setRouterPush(val: string, isadd = false): string {
       const urls = this.$route.fullPath.split("/");
       // console.log("window.location.href", urls);
       let newurl = "";
+      let argNum: number = this.$route.params.u && this.$route.params.p ? 5 : 3;
       for (let i = 1; i < urls.length; i++) {
         const e = urls[i];
         newurl += "/";
-        if (i == 5) {
+        if (i == argNum) {
           const folderPath = this.$route.params.fold as string;
           const fps = folderPath.split("-");
           if (isadd) {
@@ -343,7 +351,7 @@ export default defineComponent({
     },
 
     handleCurrentChange(val: tableData | undefined) {
-      // console.log("handleCurrentChange", val);
+      console.log("handleCurrentChange", val);
       if (val != undefined) {
         // console.log(" 111 ");
         if (val.type == "folder") {

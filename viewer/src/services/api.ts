@@ -2,7 +2,7 @@ import axios, { CancelTokenSource } from "axios";
 import { ElNotification } from "element-plus";
 import i18n from "../assets/i18n";
 import qs from "qs";
-// import router from "../router";
+import { store } from "@/store";
 
 const api = "//192.192.1.1:20520";
 
@@ -173,7 +173,11 @@ export default {
         type: "error",
       });
       if (isbacklogin && (code == 4000 || code == 3900)) {
+        // router.push({ name: "w" });
         this._backlogin(err);
+        store.state.loginDialogVisible = true;
+        sessionStorage.removeItem("exToken");
+        sessionStorage.removeItem("user");
       }
     },
 

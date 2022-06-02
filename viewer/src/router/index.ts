@@ -6,12 +6,22 @@ export default createRouter({
   routes: [
     {
       path: "",
-      redirect: "/zh-cn/f/admin/admin/-",
+      redirect: "/welcome", //"/zh-cn/f/admin/admin/-",
+    },
+    {
+      path: "/:loc/f/:fold",
+      name: "fn",
+      component: Home.Home,
     },
     {
       path: "/:loc/f/:u/:p/:fold",
       name: "f",
       component: Home.Home,
+    },
+    {
+      path: "/welcome",
+      name: "w",
+      component: Home.Welcome,
     },
     {
       path: "/about",

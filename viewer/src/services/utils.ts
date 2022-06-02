@@ -4,7 +4,6 @@ export default {
   data() {
     return {
       maxDownLoadCount: 2,
-      loginDialogVisible: false,
       //表单验证
       rules: {
         name: [
