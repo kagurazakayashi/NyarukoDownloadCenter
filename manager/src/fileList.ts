@@ -513,7 +513,13 @@ export default class UserFileList {
     deleteFile(file: any, path: string) {
         const dialogTexts: string[] = ['要删除这个文件吗？', '完整路径：' + path + '/' + file.name, '描述：' + (file.describe.length > 0 ? file.describe : '无'), '语言：' + file.locale_code, '创建时间：' + NyaTime.timeStamp2timeString(file.modification_date)];
         mdui.confirm(dialogTexts.join('<br/>'), '删除文件：' + file.name, () => {
-            this.api.netWork(window.g_url + 'fileDelete/', { uhash: this.userInfo[this.api.str.hash], fh: file.hash }, true, (data) => {
+            const url: string = window.g_url + 'fileDelete/';
+            let aPath: string = '.' + path;
+            if (aPath.charAt(aPath.length - 1) != '/') {
+                aPath += '/';
+            }
+            const arg = { uhash: this.userInfo[this.api.str.hash], fh: file.hash, fp: aPath };
+            this.api.netWork(url, arg, true, (data) => {
                 if (data != null) {
                     const redata = JSON.parse(data.response);
                     if (data.status === 200) {
@@ -601,7 +607,7 @@ export default class UserFileList {
                             this.ulProgT!.innerText = value.toString() + ' / ' + max.toString() + '   ' + percent.toString() + ' %';
                             fileUploadDialog.handleUpdate();
                         } else {
-                            console.error(status, value, max, percent);
+                            // console.log(status, value, max, percent);
                             if (this.ulProg!.className != mduiProgStyle[2]) {
                                 this.ulProg!.className = mduiProgStyle[2];
                             }

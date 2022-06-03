@@ -51,7 +51,7 @@ func main() {
 		cstSh = time.FixedZone("CST", 8*3600)
 	}
 
-	fmt.Println("User-System v0.0.3")
+	fmt.Println("NyarukoDownloadCenter v1.0.3")
 	//获取设置
 	getPublicVariable()
 	fmt.Println("测试MySQL连接...")

@@ -115,7 +115,7 @@ func fileList(w http.ResponseWriter, req *http.Request, c chan []byte) {
 	}
 	qd, err = nyaMS.QueryData("count(*)", "file_files", where, orderby, "", nil)
 	if err != nil {
-		c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9001, "err", "查询'file_ascription'失败:"+err.Error())
+		c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9001, "err", "查询'file_files'失败:"+err.Error())
 		return
 	}
 	for i := 0; i < qd.Count(); i++ {
@@ -137,9 +137,11 @@ func fileList(w http.ResponseWriter, req *http.Request, c chan []byte) {
 	qd, err = nyaMS.QueryData("*", "file_files", where, orderby, limit, nil)
 	mysqlClose(nyaMS)
 	if err != nil {
-		c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9001, "err", "查询'file_ascription'失败:"+err.Error())
+		c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9001, "err", "查询'file_files'失败:"+err.Error())
 		return
 	}
+	bytes, _ := fas.MarshalJSON()
+	fmt.Println(string(bytes))
 	// var datas []cmap.ConcurrentMap
 	filePath := cmap.New()
 	for i := 0; i < qd.Count(); i++ {
@@ -270,6 +272,10 @@ func fileUpdata(w http.ResponseWriter, req *http.Request, c chan []byte) {
 			missingParameter = append(missingParameter, "uhash")
 		}
 	}
+	fromfolderPath, ishfolderPath := req.Form["folderPath"]
+	if !ishfolderPath {
+		missingParameter = append(missingParameter, "folderPath")
+	}
 	if len(missingParameter) != 0 {
 		c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 2040, "err", missingParameter)
 		return
@@ -392,23 +398,30 @@ func fileUpdata(w http.ResponseWriter, req *http.Request, c chan []byte) {
 	if !OpenUPFile {
 		uhash = fromuhash[0]
 	}
-	key = "`user_hash`,`file_hash`"
-	val = "'" + uhash + "','" + fileHash + "'"
-	fromfolderPath, ishfolderPath := req.Form["folderPath"]
-	if ishfolderPath {
-		key += ",`folder_path`"
-		val += ",'" + fromfolderPath[0] + "'"
-	}
-	_, err = nyaMS.AddRecord("file_ascription", key, val, "", nil)
-	mysqlClose(nyaMS)
+	sqlstr := "call `f_a_add`('" + uhash + "', '" + fileHash + "', '" + fromfolderPath[0] + "', @isadd);"
+	fd, err := nyaMS.FreequeryData(sqlstr, nil)
 	if err != nil {
-		errs := strings.Split(err.Error(), "file_ascription.f_uhash_fhash")
-		if len(errs) == 2 {
-			c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9300, "err", "你已拥有此文件")
+		errs := strings.Split(err.Error(), "foreign key constraint fails")
+		if len(errs) >= 2 {
+			mysqlClose(nyaMS)
+			c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9001, "err", "文件归属错误添加失败:"+err.Error())
 			return
 		}
-		c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9001, "err", "文件归属错误添加失败:"+err.Error())
-		return
+	}
+	bytes, _ := fd.MarshalJSON()
+	fmt.Println("f_a_add:", string(bytes))
+	if fd.Count() > 0 {
+		imisadd, ish := fd.Get("0")
+		if ish {
+			isadd, ish := imisadd.(cmap.ConcurrentMap).Get("isadd")
+			if ish {
+				if isadd.(string) == "0" {
+					mysqlClose(nyaMS)
+					c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9300, "err", "你已拥有此文件")
+					return
+				}
+			}
+		}
 	}
 	c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 10000, "", fileHash)
 }
@@ -579,12 +592,16 @@ func fileDelete(w http.ResponseWriter, req *http.Request, c chan []byte) {
 	fromuhash, ishuhash := req.Form["uhash"]
 	fromfh, ishfh := req.Form["fh"]
 	fromisF, ishisF := req.Form["isForce"]
+	fromfolderPath, ishfolderPath := req.Form["fp"]
 	var missingParameter []string
 	if !isht {
 		missingParameter = append(missingParameter, "t")
 	}
 	if !ishfh {
 		missingParameter = append(missingParameter, "fh")
+	}
+	if !ishfolderPath {
+		missingParameter = append(missingParameter, "fp")
 	}
 	getUserInfo, locale_id, code := isOnLine(fromt[0])
 	if code != -1 {
@@ -642,7 +659,7 @@ func fileDelete(w http.ResponseWriter, req *http.Request, c chan []byte) {
 			return
 		}
 	} else {
-		where := "`file_hash`='" + fromfh[0] + "'"
+		where := "`file_hash`='" + fromfh[0] + "' AND `folder_path`='" + fromfolderPath[0] + "'"
 		qd, err := nyaMS.QueryData("*", "file_ascription", where, "", "", nil)
 		if err != nil {
 			mysqlClose(nyaMS)
@@ -651,10 +668,10 @@ func fileDelete(w http.ResponseWriter, req *http.Request, c chan []byte) {
 		}
 		if qd.Count() == 0 {
 			mysqlClose(nyaMS)
-			c <- nyahttphandle.AlertInfoJson(w, localeID, 4004)
+			c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9001, "err", "文件不存在")
 			return
 		}
-		err = nyaMS.DeleteRecord("file_ascription", "user_hash", uhash, " AND `file_hash`='"+fromfh[0]+"'", "", nil)
+		err = nyaMS.DeleteRecord("file_ascription", "user_hash", uhash, " AND `file_hash`='"+fromfh[0]+"' AND `folder_path`='"+fromfolderPath[0]+"'", "", nil)
 		if err != nil {
 			mysqlClose(nyaMS)
 			c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9001, "err", "解除文件归属失败: "+err.Error())
@@ -721,7 +738,7 @@ func fileDeleteForHash(nyaMS *nyamysql.NyaMySQL, filehash string) error {
 	where := "`hash`='" + filehash + "'"
 	qd, err := nyaMS.QueryData("*", "file_files", where, "", "", nil)
 	if err != nil {
-		return fmt.Errorf("查询'file_ascription'失败:" + err.Error())
+		return fmt.Errorf("查询'file_files'失败:" + err.Error())
 	}
 	if qd.Count() > 0 {
 		for item := range qd.IterBuffered() {

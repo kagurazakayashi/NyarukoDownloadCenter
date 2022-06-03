@@ -1,4 +1,4 @@
-module user-system
+module NyarukoDownloadCenter
 
 go 1.17
 
