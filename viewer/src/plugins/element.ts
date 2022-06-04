@@ -28,6 +28,18 @@ const iconList = [
   "Edit",
   "CloseBold",
   "CircleCloseFilled",
+  "DocumentRemove",
+  "Picture",
+  "VideoCamera",
+  "Headset",
+  "Setting",
+  "List",
+  "DataAnalysis",
+  "Box",
+  "CollectionTag",
+  "Expand",
+  "SetUp",
+  "PictureRounded",
 ];
 // eslint-disable-next-line
 export default (app: any) => {

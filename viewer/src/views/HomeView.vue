@@ -21,7 +21,8 @@
           <el-icon><Folder /></el-icon>
         </template>
         <template v-if="scope.row.type == 'file'">
-          <el-icon><Document /></el-icon>
+          <!-- <el-icon><component :is="typeIcon(scope.row.name)" /></el-icon> -->
+          <IconView :fileName="scope.row.name" />
         </template>
       </template>
     </el-table-column>
@@ -115,6 +116,7 @@ import { defineComponent } from "vue";
 import urlAPI from "@/services/api";
 import utils from "@/services/utils";
 import axios from "axios";
+import IconView from "@/components/IconView.vue";
 
 interface type {
   reLogin: number;
@@ -147,7 +149,7 @@ export default defineComponent({
     } as type;
   },
   mixins: [utils, urlAPI],
-  components: {},
+  components: { IconView },
   mounted() {
     // this.t2columns = generateColumns(5);
     // this.data = generateData(this.t2columns, 200);
@@ -351,7 +353,7 @@ export default defineComponent({
     },
 
     handleCurrentChange(val: tableData | undefined) {
-      console.log("handleCurrentChange", val);
+      // console.log("handleCurrentChange", val);
       if (val != undefined) {
         // console.log(" 111 ");
         if (val.type == "folder") {

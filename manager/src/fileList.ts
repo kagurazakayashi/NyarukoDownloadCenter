@@ -22,18 +22,18 @@ export default class UserFileList {
     nowStart: number = 0;
     fileNumber: number = 65536;
     extLib: (string | string[])[][] = [
-        [['jpg', 'jpeg', 'png', 'gif', 'tif', 'tiff', 'jfif', 'webp', 'bmp'], '图片文件', 'image'],
-        [['mp4', 'mov', 'mkv', 'flv'], '视频文件', 'videocam'],
-        [['mp3', 'wav', 'flac'], '音频文件', 'audiotrack'],
-        [['exe', 'bat', 'sh'], '可执行文件', 'settings_applications'],
-        [['txt', 'md', 'pdf', 'doc', 'docx'], '文字文档', 'description'],
-        [['xls', 'xlsx', 'csv'], '电子表格', 'view_list'],
-        [['ppt', 'pptx', 'pps'], '幻灯片', 'video_library'],
-        [['zip', 'rar', '7z', 'xz', 'gz'], '压缩包', 'archive'],
-        [['htm', 'html'], '网页', 'web'],
-        [['c', 'h', 'cs', 'py', 'go', 'dart', 'js', 'sql'], '代码文件', 'code'],
-        [['json', 'ini', 'conf', 'xml'], '配置文件', 'build'],
-        [['psd', 'ai'], '图形源文件', 'build'],
+        [[ "jpg", "jpeg", "png", "gif", "svg", "tif", "tiff", "jfif", "webp", "bmp", "arw", "raw"], "图片文件", "Picture"],
+        [["mp4", "mkv", "mov", "flv", "ape", "wmv", "avi"], "视频文件", "VideoCamera"],
+        [["mp3", "wav", "flac", "wma", "ape"], "音频文件", "Headset"],
+        [["exe", "bat", "sh"], "可执行文件", "Setting"],
+        [["txt", "md", "pdf", "doc", "docx"], "文字文档", "Document"],
+        [["xls", "xlsx", "csv"], "电子表格", "List"],
+        [["ppt", "pptx", "pps"], "幻灯片", "DataAnalysis"],
+        [["zip", "rar", "7z", "xz", "gz"], "压缩包", "Box"],
+        [["htm", "html"], "网页", "CollectionTag"],
+        [["c", "h", "cs", "py", "go", "dart", "js", "sql"], "代码文件", "Expand"],
+        [["json", "ini", "conf", "xml"], "配置文件", "SetUp"],
+        [["psd", "ai"], "图形源文件", "PictureRounded"],
     ];
     vPath: string = '/';
     vPathBar: HTMLDivElement | null = null;
