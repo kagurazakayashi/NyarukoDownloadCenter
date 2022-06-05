@@ -53,3 +53,4 @@ pnpm-debug.log*
 # vendor/
 
 temp/
+private.txt

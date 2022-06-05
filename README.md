@@ -1,4 +1,4 @@
-![](viewer/src/assets/logo.png)
+![](blob/main/viewer/src/assets/media/logo.png?raw=true)
 
 # Nyaruko Download Center
 
