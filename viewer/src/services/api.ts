@@ -8,7 +8,6 @@ const api = "//192.192.1.1:20520";
 
 export default {
   methods: {
-    // eslint-disable-next-line
     login(username: string, password: string): any {
       return axios
         .post(
@@ -33,7 +32,6 @@ export default {
         });
     },
 
-    // eslint-disable-next-line
     logout(): any {
       const token = sessionStorage.getItem("exToken");
       if (token == null || token == "") {
@@ -42,6 +40,8 @@ export default {
           _resolve({ code: -1 });
         });
       }
+      sessionStorage.removeItem("exToken");
+      sessionStorage.removeItem("user");
       return axios
         .post(
           `${api}/logout/`,
@@ -50,15 +50,34 @@ export default {
           })
         )
         .then((resp) => {
+          location.reload();
           return resp.data;
         })
         .catch((error) => {
           this._errorhandling(error, false);
+          location.reload();
           return error.response;
         });
     },
 
-    // eslint-disable-next-line
+    userList(username = ""): any {
+      return axios
+        .post(
+          `${api}/userList/`,
+          qs.stringify({
+            s: 1,
+            username: username,
+          })
+        )
+        .then((resp) => {
+          return resp.data;
+        })
+        .catch((error) => {
+          this._errorhandling(error, true);
+          return error.response;
+        });
+    },
+
     getFileList(loc = "en"): any {
       const token = sessionStorage.getItem("exToken");
       if (
@@ -148,7 +167,6 @@ export default {
         });
     },
 
-    // eslint-disable-next-line
     _errorhandling(error: any, isbacklogin = true) {
       let err: string = error.message;
       let code = 0;

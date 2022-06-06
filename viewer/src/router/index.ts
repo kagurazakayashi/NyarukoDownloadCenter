@@ -19,6 +19,11 @@ export default createRouter({
       component: Home.Home,
     },
     {
+      path: "/goto",
+      name: "goto",
+      component: Home.GoTo,
+    },
+    {
       path: "/welcome",
       name: "w",
       component: Home.Welcome,

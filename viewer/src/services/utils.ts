@@ -37,7 +37,7 @@ export default {
         name: "",
         pw: "",
       },
-      formLabelWidth: 80,
+      formLabelWidth: 100,
       //初始值设置
       colors: [
         { color: "#f56c6c", percentage: 30 },
@@ -101,7 +101,6 @@ export default {
       }
     },
 
-    // eslint-disable-next-line
     cancelDL(store: any, fhash: string) {
       for (let i = 0; i < store.state.progressList.length; i++) {
         const e = store.state.progressList[i];
@@ -118,14 +117,12 @@ export default {
       }
     },
 
-    // eslint-disable-next-line
     isundefined(str: any): boolean {
       if (str == null || str == undefined || str == "undefined") {
         return true;
       }
       return false;
     },
-    // eslint-disable-next-line
     listIsHave(list: any[], lkey: string, item: any, ikey: string): boolean {
       let ish = false;
       list.forEach((e) => {

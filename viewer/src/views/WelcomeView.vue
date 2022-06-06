@@ -1,9 +1,17 @@
 <template>
   <div class="About">
-    <h1>Welcome</h1>
-    <el-button @click="$store.state.loginDialogVisible = true">
-      Login
-    </el-button>
+    <h1>{{ $t("text.welcome") }}</h1>
+    <p>&emsp;</p>
+    <p>
+      <el-button type="success" @click="$store.state.loginDialogVisible = true">
+        {{ $t("button.login") }}
+      </el-button>
+    </p>
+    <p>
+      <el-button @click="this.$router.push({ name: 'goto' })">
+        {{ $t("goto.title") }}
+      </el-button>
+    </p>
   </div>
 </template>
 

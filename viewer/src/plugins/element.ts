@@ -40,6 +40,7 @@ const iconList = [
   "Expand",
   "SetUp",
   "PictureRounded",
+  "FolderOpened",
 ];
 // eslint-disable-next-line
 export default (app: any) => {

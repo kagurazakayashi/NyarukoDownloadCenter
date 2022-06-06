@@ -69,9 +69,20 @@
               :ellipsis="false"
               @select="settinghandleSelect"
             >
-              <el-menu-item index="login">
-                {{ menuUserName == "" ? $t("button.login") : menuUserName }}
-              </el-menu-item>
+              <el-sub-menu class="menubutton row-rigth" index="user">
+                <template #title>
+                  {{ menuUserName == "" ? $t("button.login") : menuUserName }}
+                </template>
+                <el-menu-item index="login">
+                  {{ $t("button.login") }}
+                </el-menu-item>
+                <el-menu-item index="public">
+                  {{ $t("goto.title") }}
+                </el-menu-item>
+                <el-menu-item index="logout">
+                  {{ $t("button.logout") }}
+                </el-menu-item>
+              </el-sub-menu>
               <el-sub-menu class="menubutton row-rigth" index="lang">
                 <template #title>
                   {{ $t("loc") }}
@@ -99,7 +110,6 @@
           <el-dialog
             v-model="$store.state.loginDialogVisible"
             :title="$t('button.login')"
-            width="30%"
           >
             <el-form ref="ruleFormRef" :model="loginFrom" :rules="rules">
               <el-form-item
@@ -172,6 +182,10 @@ export default defineComponent({
           ElMessage("[message]" + key);
         }
       },
+      loginPubilc: () => {
+        this.$router.push({ name: "goto" });
+        this.$store.state.loginDialogVisible = false;
+      },
       settinghandleSelect: (key: string) => {
         if (key == "logout") {
           // eslint-disable-next-line
@@ -184,6 +198,8 @@ export default defineComponent({
           this.loginFrom.name = "";
           this.loginFrom.pw = "";
           this.$store.state.loginDialogVisible = true;
+        } else if (key == "public") {
+          this.$router.push({ name: "goto" });
         } else {
           this.$i18n.locale = key;
           sessionStorage.setItem("lang", key);
