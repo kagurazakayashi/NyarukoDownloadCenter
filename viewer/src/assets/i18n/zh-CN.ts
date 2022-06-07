@@ -1,5 +1,6 @@
 export default {
-  loc: "中文",
+  loc: "简体中文",
+  title: "文件下载中心",
   page: {
     organizeData: "整理异常数据",
     root: "根目录",
@@ -10,6 +11,7 @@ export default {
     size: "大小",
   },
   text: {
+    welcome: "欢迎",
     test: "测试",
   },
   form: {
@@ -40,6 +42,7 @@ export default {
     },
     leavemessage: "给我们留言",
     download: "下载",
+    extract: "提取文件",
   },
   state: {
     success: "成功",
@@ -56,5 +59,10 @@ export default {
     download: "下载",
     noexist: "文件不存在",
     maxdownload: "下载线程达到上限",
+    notfound: "没有找到",
+  },
+  goto: {
+    title: "公有账户登录",
+    input: "请输入公有账户名称",
   },
 };

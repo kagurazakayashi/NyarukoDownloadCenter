@@ -1,0 +1,52 @@
+export default {
+  loc: "繁體中文",
+  title: "檔案下載中心",
+  page: { organizeData: "整理異常資料", root: "根目錄" },
+  tableHeard: { name: "名稱", describe: "描述", size: "大小" },
+  text: { welcome: "歡迎", test: "測試" },
+  form: {
+    name: "使用者名稱",
+    pw: "密碼",
+    rules: {
+      name: "請輸入使用者名稱",
+      pw: "請輸入密碼",
+      len: "長度應為3至20位",
+    },
+  },
+  button: {
+    confirm: "確定",
+    cancel: "取消",
+    login: "登入",
+    logout: "登出",
+    getdata: "獲取資料",
+    application: "應用",
+    datePicker: {
+      start: "開始時間",
+      end: "結束時間",
+      last: {
+        day: "最近24小時",
+        week: "最近一週",
+        month: "最近一個月",
+        threemonth: "最近三個月",
+      },
+    },
+    leavemessage: "給我們留言",
+    download: "下載",
+    extract: "提取檔案",
+  },
+  state: { success: "成功", error: "錯誤" },
+  rules: {
+    nonull: {},
+    mustNumber: "必須是數字",
+    positiveNumber: "必須是正數",
+    min1: "必須大於0",
+  },
+  tips: {
+    nodata: "沒有資料",
+    download: "下載",
+    noexist: "檔案不存在",
+    maxdownload: "下載執行緒達到上限",
+    notfound: "沒有找到",
+  },
+  goto: { title: "公有賬戶登入", input: "請輸入公有賬戶名稱" },
+};

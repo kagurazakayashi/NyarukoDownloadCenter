@@ -87,8 +87,10 @@
                 <template #title>
                   {{ $t("loc") }}
                 </template>
-                <el-menu-item index="zh-cn"> 中文 </el-menu-item>
+                <el-menu-item index="zh-cn"> 简体中文 </el-menu-item>
+                <el-menu-item index="zh-tw"> 繁體中文 </el-menu-item>
                 <el-menu-item index="en"> English </el-menu-item>
+                <el-menu-item index="ja"> 日本語 </el-menu-item>
               </el-sub-menu>
               <!-- <el-menu-item index="login"> Login </el-menu-item> -->
               <!-- <el-menu-item
@@ -133,12 +135,15 @@
             </el-form>
             <template #footer>
               <span class="dialog-footer">
-                <el-button @click="$store.state.loginDialogVisible = false"
-                  >Cancel</el-button
-                >
-                <el-button type="primary" @click="loginSub()"
-                  >Confirm</el-button
-                >
+                <el-button @click="loginPubilc()">{{
+                  $t("goto.title")
+                }}</el-button>
+                <el-button @click="$store.state.loginDialogVisible = false">{{
+                  $t("button.cancel")
+                }}</el-button>
+                <el-button type="primary" @click="loginSub()">{{
+                  $t("button.login")
+                }}</el-button>
               </span>
             </template>
           </el-dialog>
@@ -171,7 +176,7 @@ export default defineComponent({
   data() {
     return {
       pageTitle: (): string => {
-        return document.title;
+        return this.$t("title");
       },
       mainhandleSelect: (key: string) => {
         const strkeys = key.split("/");
@@ -228,6 +233,7 @@ export default defineComponent({
   },
 
   mounted() {
+    document.title = this.$t("title");
     this.$store.state.loginDialogVisible = false;
     if (
       this.$route.params.loc == undefined ||

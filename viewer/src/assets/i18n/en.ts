@@ -1,5 +1,6 @@
 export default {
   loc: "English",
+  title: "Download Center",
   page: {
     organizeData: "Organize abnormal data",
     root: "Root directory",
@@ -10,6 +11,7 @@ export default {
     size: "Size",
   },
   text: {
+    welcome: "Welcome",
     test: "Test",
   },
   form: {
@@ -40,6 +42,7 @@ export default {
     },
     leavemessage: "Leave us a message",
     download: "Download",
+    extract: "Extract file",
   },
   state: {
     success: "Success",
@@ -56,5 +59,10 @@ export default {
     download: "Download",
     noexist: "File does not exist",
     maxdownload: "Download thread reached maximum",
+    notfound: "Not found",
+  },
+  goto: {
+    title: "Public account login",
+    input: "Please enter the public account name",
   },
 };
