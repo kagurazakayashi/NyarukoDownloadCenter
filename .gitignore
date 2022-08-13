@@ -54,3 +54,5 @@ pnpm-debug.log*
 
 temp/
 private.txt
+**/dist
+*.7z

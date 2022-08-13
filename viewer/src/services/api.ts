@@ -4,7 +4,9 @@ import i18n from "../assets/i18n";
 import qs from "qs";
 import { store } from "@/store";
 
-const api = "//192.192.1.1:20520";
+// const api = "//192.192.1.1:20520";
+// const api = "//tool.tongdy.com/file";
+const api = "//www.yoooooooooo.com/api/download";
 
 export default {
   methods: {

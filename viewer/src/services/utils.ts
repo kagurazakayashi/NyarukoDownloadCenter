@@ -59,6 +59,14 @@ export default {
       sessionStorage.setItem("lang", loc);
       i18n.global.locale = loc;
     },
+    setDark(isdark = false) {
+      const html = document.getElementsByTagName("html");
+      if (isdark) {
+        html[0].className = "dark";
+      } else {
+        html[0].className = "";
+      }
+    },
     showTopMenu() {
       const vContainer: HTMLDivElement | null = document.getElementById(
         "view-container"

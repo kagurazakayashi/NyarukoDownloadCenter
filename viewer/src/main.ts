@@ -4,6 +4,7 @@ import router from "./router";
 import { store, key } from "./store";
 import i18n from "./assets/i18n";
 import "./assets/css/font.css";
+import "@/assets/css/el-p-dark.css";
 import { ElNotification } from "element-plus";
 // import ElementPlus from "element-plus";
 import Element from "./plugins/element";

@@ -8,7 +8,7 @@
       </el-button>
     </p>
     <p>
-      <el-button @click="this.$router.push({ name: 'goto' })">
+      <el-button @click="$router.push({ name: 'goto' })">
         {{ $t("goto.title") }}
       </el-button>
     </p>

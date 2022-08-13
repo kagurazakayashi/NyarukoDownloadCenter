@@ -1,7 +1,9 @@
 <template>
   <el-config-provider :locale="$i18n.locale == 'zh' ? elloczh : ellocen">
     <el-container>
-      <el-header class="headbar">
+      <el-header
+        :class="isDark ? 'headbar headbar-dark' : 'headbar headbar-light'"
+      >
         <div class="logoview row-left">
           <img class="headlogo" alt="logo" src="./assets/media/logo.png" />
         </div>
@@ -10,6 +12,17 @@
         </div>
         <div class="mainmenu row-rigth">
           <el-row :gutter="0" justify="end" align="middle">
+            <el-switch
+              v-model="isDark"
+              class="mt-2"
+              style="margin-left: 24px"
+              inline-prompt
+              active-color="#181818"
+              inactive-color="#B0C4DE"
+              active-icon="Moon"
+              inactive-icon="Sunny"
+              :before-change="beforeChange"
+            />
             <template v-if="$store.state.progressList.length > 0">
               <el-popover
                 v-model:visible="$store.state.downloadListVisible"
@@ -63,9 +76,9 @@
               class="flexEnd"
               :default-active="$i18n.locale"
               mode="horizontal"
-              background-color="skyblue"
-              text-color="#000"
-              active-text-color="#204472"
+              :background-color="isDark ? '#545c64' : 'skyblue'"
+              :text-color="isDark ? '#E5EAF3' : '#000'"
+              :active-text-color="isDark ? '#fff' : '#204472'"
               :ellipsis="false"
               @select="settinghandleSelect"
             >
@@ -218,6 +231,7 @@ export default defineComponent({
       },
       logoW: "",
       menuUserName: "",
+      isDark: false,
     };
   },
 
@@ -247,10 +261,29 @@ export default defineComponent({
     } else {
       this.setloc(this.$route.params.loc as string);
     }
+    const isd = sessionStorage.getItem("isDark");
+    if (isd == "1") {
+      this.isDark = true;
+    }
+    this.setDark(this.isDark);
     const user = sessionStorage.getItem("user");
     if (user && user.length > 0) {
       this.menuUserName = user;
     }
+  },
+
+  beforeChange() {
+    // this.isDark = !this.isDark;
+    const isD = !this.isDark;
+    if (isD) {
+      sessionStorage.setItem("isDark", "1");
+    } else {
+      sessionStorage.setItem("isDark", "0");
+    }
+    this.setDark(isD);
+    return new Promise(function (_resolve) {
+      _resolve(true);
+    });
   },
 
   methods: {
@@ -395,6 +428,15 @@ body {
   flex-direction: column;
   flex-wrap: wrap;
   align-content: center;
+}
+
+.headbar-light {
+  background-color: skyblue;
+  color: #204472;
+}
+
+.headbar-dark {
+  background-color: #545c64;
 }
 
 @media screen and (max-width: 900px) {
