@@ -99,26 +99,43 @@ func userList(w http.ResponseWriter, req *http.Request, c chan []byte) {
 	}
 	req.ParseMultipartForm(32 << 20)
 	fromt, isht := req.Form["t"]
-	var missingParameter []string
-	if !isht {
-		missingParameter = append(missingParameter, "t")
-	}
-	if len(missingParameter) != 0 {
-		c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 2040, "err", missingParameter)
-		return
+	// var missingParameter []string
+	// if !isht {
+	// 	missingParameter = append(missingParameter, "t")
+	// }
+	// if len(missingParameter) != 0 {
+	// 	c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 2040, "err", missingParameter)
+	// 	return
+	// }
+
+	isAdmin := false
+	if isht {
+		getUserInfo, locale_id, code := isOnLine(fromt[0])
+		if code != -1 {
+			c <- nyahttphandle.AlertInfoJson(w, localeID, code)
+			return
+		}
+		localeID = locale_id
+		permissions_id := gjson.Get(getUserInfo, "permissions_id")
+		if permissions_id.Exists() && permissions_id.String() == adminPermissionsID {
+			isAdmin = true
+		}
 	}
 
-	getUserInfo, locale_id, code := isOnLine(fromt[0])
-	if code != -1 {
-		c <- nyahttphandle.AlertInfoJson(w, localeID, code)
-		return
+	isSearch := false
+	froms, ishs := req.Form["s"]
+	if ishs {
+		if froms[0] == "1" {
+			isSearch = true
+		}
 	}
-	localeID = locale_id
-	permissions_id := gjson.Get(getUserInfo, "permissions_id")
-	if !permissions_id.Exists() || !(permissions_id.Exists() && permissions_id.String() == adminPermissionsID) {
-		c <- nyahttphandle.AlertInfoJson(w, localeID, 4004)
-		return
+	if !isSearch {
+		if !isAdmin {
+			c <- nyahttphandle.AlertInfoJson(w, localeID, 4004)
+			return
+		}
 	}
+
 	nyaMS := mysqlIsRun()
 	if nyaMS == nil {
 		c <- nyahttphandle.AlertInfoJson(w, localeID, 9000)
@@ -128,7 +145,7 @@ func userList(w http.ResponseWriter, req *http.Request, c chan []byte) {
 	orderby := "`creation_date` ASC"
 	limit := ""
 	fromusername, ishusername := req.Form["username"]
-	if ishusername {
+	if ishusername && fromusername[0] != "" {
 		where = "`username` LIKE '%" + fromusername[0] + "%'"
 	}
 	fromenable, ishenable := req.Form["enable"]
@@ -168,10 +185,6 @@ func userList(w http.ResponseWriter, req *http.Request, c chan []byte) {
 		c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9001, "err", "查询数据库'account_user'失败"+err.Error())
 		return
 	}
-	if err != nil {
-		c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9001, "err", "查询'file_ascription'失败:"+err.Error())
-		return
-	}
 	for i := 0; i < qd.Count(); i++ {
 		stri := strconv.Itoa(i)
 		item, ish := qd.Get(stri)
@@ -198,7 +211,7 @@ func userList(w http.ResponseWriter, req *http.Request, c chan []byte) {
 		c <- nyahttphandle.AlertInfoJson(w, localeID, 4003)
 		return
 	}
-	var datas []cmap.ConcurrentMap
+	var datas []interface{}
 	for i := 0; i < qd.Count(); i++ {
 		str := strconv.Itoa(i)
 		item, ish := qd.Get(str)
@@ -206,47 +219,56 @@ func userList(w http.ResponseWriter, req *http.Request, c chan []byte) {
 			continue
 		}
 		itemcmap := item.(cmap.ConcurrentMap)
-		itemcmap.Remove("password")
-		userInfo := cmap.New()
-		for m := range itemcmap.IterBuffered() {
-			val := m.Val.(string)
-			switch m.Key {
-			case "enable":
-				userInfo.Set(m.Key, val)
-			case "creation_date", "modification_date", "disable_startdate", "disable_enddate":
-				if len(val) == 10 {
+		if isSearch {
+			u, ish := itemcmap.Get("username")
+			if ish {
+				if u.(string) != "admin" && u.(string) != "tongdy" {
+					datas = append(datas, u)
+				}
+			}
+		} else {
+			itemcmap.Remove("password")
+			userInfo := cmap.New()
+			for m := range itemcmap.IterBuffered() {
+				val := m.Val.(string)
+				switch m.Key {
+				case "enable":
+					userInfo.Set(m.Key, val)
+				case "creation_date", "modification_date", "disable_startdate", "disable_enddate":
+					if len(val) == 10 {
+						number, err := strconv.Atoi(val)
+						if err != nil {
+							userInfo.Set(m.Key, val)
+						}
+						userInfo.Set(m.Key, number)
+					} else {
+						if val == "" {
+							userInfo.Set(m.Key, -1)
+						} else {
+							userInfo.Set(m.Key, val)
+						}
+					}
+				case "permissions_id":
 					number, err := strconv.Atoi(val)
 					if err != nil {
 						userInfo.Set(m.Key, val)
 					}
 					userInfo.Set(m.Key, number)
-				} else {
-					if val == "" {
-						userInfo.Set(m.Key, -1)
-					} else {
-						userInfo.Set(m.Key, val)
+				case "locale_code":
+					userInfo.Set(m.Key, val)
+					if m, ok := localeLists.Get(val); ok {
+						mv := m.([]interface{})
+						if len(mv) == 2 {
+							userInfo.Set("locale_id", mv[0])
+							userInfo.Set("locale", mv[1])
+						}
 					}
-				}
-			case "permissions_id":
-				number, err := strconv.Atoi(val)
-				if err != nil {
+				default:
 					userInfo.Set(m.Key, val)
 				}
-				userInfo.Set(m.Key, number)
-			case "locale_code":
-				userInfo.Set(m.Key, val)
-				if m, ok := localeLists.Get(val); ok {
-					mv := m.([]interface{})
-					if len(mv) == 2 {
-						userInfo.Set("locale_id", mv[0])
-						userInfo.Set("locale", mv[1])
-					}
-				}
-			default:
-				userInfo.Set(m.Key, val)
 			}
+			datas = append(datas, userInfo)
 		}
-		datas = append(datas, userInfo)
 	}
 	redata := cmap.New()
 	redata.Set("data", datas)
@@ -1015,6 +1037,7 @@ func isOnLine(t string) (string, int, int) {
 	getstr := nyaR.GetString("s_" + t)
 	if getstr == "" {
 		redisClose(nyaR)
+		fmt.Println("s_" + t + "<<<")
 		return "", -1, 3900
 	} else {
 		gjEnable := gjson.Get(getstr, "enable")

@@ -1,6 +1,9 @@
 SET CGO_ENABLED=0
 SET GOOS=windows
 SET GOARCH=amd64
-DEL NyarukoDownloadCenter.exe.xz
-go build -o NyarukoDownloadCenter.exe ..
-xz -z -e -9 -T 0 -v NyarukoDownloadCenter
+go build -o file-mgr ..
+7z a -mx9 file-mgr.xz file-mgr
+del file-mgr
+copy ..\code.csv \\CHENXIAOCHI\share-d\[000]\file_mgr\code.csv
+copy ..\setting.json \\CHENXIAOCHI\share-d\[000]\file_mgr\setting.json
+move file-mgr.xz \\CHENXIAOCHI\share-d\[000]\file_mgr\file-mgr.xz

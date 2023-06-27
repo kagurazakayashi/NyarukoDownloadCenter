@@ -83,9 +83,18 @@ func fileList(w http.ResponseWriter, req *http.Request, c chan []byte) {
 		fhashsCount += 1
 		icmapFolderPath, ish := itemcmap.Get("folder_path")
 		if ish {
-			fas.Set(icmapFileHash.(string), icmapFolderPath)
+			var fass []string
+			imfs, ish := fas.Get(icmapFileHash.(string))
+			if ish {
+				fass = imfs.([]string)
+			}
+			fass = append(fass, icmapFolderPath.(string))
+			fas.Set(icmapFileHash.(string), fass)
 		}
 	}
+	// bytes, _ := fas.MarshalJSON()
+	// fmt.Println("=====", string(bytes), "=====")
+
 	if fhashs == "" {
 		redata := cmap.New()
 		mysqlClose(nyaMS)
@@ -140,8 +149,6 @@ func fileList(w http.ResponseWriter, req *http.Request, c chan []byte) {
 		c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9001, "err", "查询'file_files'失败:"+err.Error())
 		return
 	}
-	bytes, _ := fas.MarshalJSON()
-	fmt.Println(string(bytes))
 	// var datas []cmap.ConcurrentMap
 	filePath := cmap.New()
 	for i := 0; i < qd.Count(); i++ {
@@ -157,40 +164,43 @@ func fileList(w http.ResponseWriter, req *http.Request, c chan []byte) {
 		if ish {
 			fa, ish := fas.Get(fhash.(string))
 			if ish {
-				if reflect.TypeOf(fa).Name() == "string" {
-					folder_path := strings.Split(fa.(string), "/")
-					if len(folder_path) == 2 && folder_path[1] == "" {
-						var _fp []cmap.ConcurrentMap
-						filePath_list, ish := filePath.Get("fileList")
-						if ish {
-							_fp = filePath_list.([]cmap.ConcurrentMap)
-						}
-						_fp = append(_fp, itemcmap)
-						filePath.Set("fileList", _fp)
-					} else if len(folder_path) >= 2 {
-						thisFP := filePath
-						for i := 1; i < len(folder_path); i++ {
-							if i > 1 {
-								cmapFP, ish := thisFP.Get(folder_path[i-1])
-								if ish {
-									thisFP = cmapFP.(cmap.ConcurrentMap)
-								}
-							}
+				faList := fa.([]string)
+				for _, faStr := range faList {
+					if reflect.TypeOf(faStr).Name() == "string" {
+						folder_path := strings.Split(faStr, "/")
+						if len(folder_path) == 2 && folder_path[1] == "" {
 							var _fp []cmap.ConcurrentMap
-							if folder_path[i] != "" {
-								_, ish := thisFP.Get(folder_path[i])
-								if !ish {
-									thisFP.Set(folder_path[i], cmap.New())
-								}
-							} else {
-								filePath_list, ish := thisFP.Get("fileList")
-								if ish {
-									_fp = filePath_list.([]cmap.ConcurrentMap)
-								}
-								_fp = append(_fp, itemcmap)
-								thisFP.Set("fileList", _fp)
+							filePath_list, ish := filePath.Get("fileList")
+							if ish {
+								_fp = filePath_list.([]cmap.ConcurrentMap)
 							}
-							// folderPathI,ish:=filePath.Get(folder_path[i])
+							_fp = append(_fp, itemcmap)
+							filePath.Set("fileList", _fp)
+						} else if len(folder_path) >= 2 {
+							thisFP := filePath
+							for i := 1; i < len(folder_path); i++ {
+								if i > 1 {
+									cmapFP, ish := thisFP.Get(folder_path[i-1])
+									if ish {
+										thisFP = cmapFP.(cmap.ConcurrentMap)
+									}
+								}
+								var _fp []cmap.ConcurrentMap
+								if folder_path[i] != "" {
+									_, ish := thisFP.Get(folder_path[i])
+									if !ish {
+										thisFP.Set(folder_path[i], cmap.New())
+									}
+								} else {
+									filePath_list, ish := thisFP.Get("fileList")
+									if ish {
+										_fp = filePath_list.([]cmap.ConcurrentMap)
+									}
+									_fp = append(_fp, itemcmap)
+									thisFP.Set("fileList", _fp)
+								}
+								// folderPathI,ish:=filePath.Get(folder_path[i])
+							}
 						}
 					}
 				}
@@ -258,13 +268,13 @@ func fileUpdata(w http.ResponseWriter, req *http.Request, c chan []byte) {
 	}
 	localeID = locale_id
 	permissions_id := gjson.Get(getUserInfo, "permissions_id")
-	if !permissions_id.Exists() || (permissions_id.Exists() && permissions_id.Int() != 1) {
+	if !permissions_id.Exists() || (permissions_id.Exists() && permissions_id.String() == adminPermissionsID) {
 		c <- nyahttphandle.AlertInfoJson(w, localeID, 4004)
 		return
 	}
 	fromuhash, ishuhash := req.Form["uhash"]
 	if !OpenUPFile {
-		if !permissions_id.Exists() || (permissions_id.Exists() && permissions_id.Int() != 1) {
+		if !permissions_id.Exists() || (permissions_id.Exists() && permissions_id.String() == adminPermissionsID) {
 			c <- nyahttphandle.AlertInfoJson(w, localeID, 4004)
 			return
 		}
@@ -398,7 +408,7 @@ func fileUpdata(w http.ResponseWriter, req *http.Request, c chan []byte) {
 	if !OpenUPFile {
 		uhash = fromuhash[0]
 	}
-	sqlstr := "call `f_a_add`('" + uhash + "', '" + fileHash + "', '" + fromfolderPath[0] + "', @isadd);"
+	sqlstr := "call `user_test`.`f_a_add`('" + uhash + "', '" + fileHash + "', '" + fromfolderPath[0] + "', @isadd);"
 	fd, err := nyaMS.FreequeryData(sqlstr, nil)
 	if err != nil {
 		errs := strings.Split(err.Error(), "foreign key constraint fails")
@@ -408,8 +418,6 @@ func fileUpdata(w http.ResponseWriter, req *http.Request, c chan []byte) {
 			return
 		}
 	}
-	bytes, _ := fd.MarshalJSON()
-	fmt.Println("f_a_add:", string(bytes))
 	if fd.Count() > 0 {
 		imisadd, ish := fd.Get("0")
 		if ish {
@@ -467,7 +475,8 @@ func fileDownload(w http.ResponseWriter, req *http.Request, c chan []byte) {
 		c <- nyahttphandle.AlertInfoJson(w, localeID, 9000)
 		return
 	}
-	if !permissions_id.Exists() || (permissions_id.Exists() && permissions_id.Int() != 1) {
+
+	if !permissions_id.Exists() || (permissions_id.Exists() && permissions_id.String() != adminPermissionsID) {
 		where := "`user_hash`='" + uhash + "' AND `file_hash`='" + fromfh[0] + "'"
 		qd, err := nyaMS.QueryData("*", "file_ascription", where, "", "", nil)
 		if err != nil {
@@ -477,7 +486,7 @@ func fileDownload(w http.ResponseWriter, req *http.Request, c chan []byte) {
 		}
 		if qd.Count() == 0 {
 			mysqlClose(nyaMS)
-			c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9300, "err", "文件不存在")
+			c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9300, "err", "文件不存在(0x01)")
 			return
 		}
 	}
@@ -519,7 +528,7 @@ func fileDownload(w http.ResponseWriter, req *http.Request, c chan []byte) {
 		filePath = icmapPath.(string)
 	}
 	if exist != "1" {
-		c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9300, "err", "文件不存在")
+		c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9300, "err", "文件不存在(0x02)")
 	}
 	if enabled != "1" {
 		c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9300, "err", "文件不可用")
@@ -668,7 +677,7 @@ func fileDelete(w http.ResponseWriter, req *http.Request, c chan []byte) {
 		}
 		if qd.Count() == 0 {
 			mysqlClose(nyaMS)
-			c <- nyahttphandle.AlertInfoJsonKV(w, localeID, 9001, "err", "文件不存在")
+			c <- nyahttphandle.AlertInfoJson(w, localeID, 4004)
 			return
 		}
 		err = nyaMS.DeleteRecord("file_ascription", "user_hash", uhash, " AND `file_hash`='"+fromfh[0]+"' AND `folder_path`='"+fromfolderPath[0]+"'", "", nil)
