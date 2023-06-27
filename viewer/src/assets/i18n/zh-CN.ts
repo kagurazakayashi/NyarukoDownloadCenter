@@ -1,6 +1,5 @@
 export default {
-  loc: "简体中文",
-  title: "文件下载中心",
+  loc: "中文",
   page: {
     organizeData: "整理异常数据",
     root: "根目录",
@@ -11,7 +10,6 @@ export default {
     size: "大小",
   },
   text: {
-    welcome: "欢迎",
     test: "测试",
   },
   form: {
@@ -62,7 +60,7 @@ export default {
     notfound: "没有找到",
   },
   goto: {
-    title: "公有账户登录",
-    input: "请输入公有账户名称",
+    title: "查询下载",
+    input: "请输入设备型号（例如：MSD）",
   },
 };

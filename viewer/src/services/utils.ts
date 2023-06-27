@@ -4,6 +4,7 @@ export default {
   data() {
     return {
       maxDownLoadCount: 2,
+      loginDialogVisible: false,
       //表单验证
       rules: {
         name: [
@@ -37,7 +38,7 @@ export default {
         name: "",
         pw: "",
       },
-      formLabelWidth: 100,
+      formLabelWidth: 80,
       //初始值设置
       colors: [
         { color: "#f56c6c", percentage: 30 },
@@ -59,6 +60,7 @@ export default {
       sessionStorage.setItem("lang", loc);
       i18n.global.locale = loc;
     },
+
     setDark(isdark = false) {
       const html = document.getElementsByTagName("html");
       if (isdark) {
@@ -67,6 +69,7 @@ export default {
         html[0].className = "";
       }
     },
+
     showTopMenu() {
       const vContainer: HTMLDivElement | null = document.getElementById(
         "view-container"
@@ -93,6 +96,7 @@ export default {
         }
       }
     },
+
     displayMenu() {
       const vContainer: HTMLDivElement | null = document.getElementById(
         "view-container"
@@ -131,6 +135,7 @@ export default {
       }
       return false;
     },
+
     listIsHave(list: any[], lkey: string, item: any, ikey: string): boolean {
       let ish = false;
       list.forEach((e) => {

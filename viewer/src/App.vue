@@ -2,27 +2,27 @@
   <el-config-provider :locale="$i18n.locale == 'zh' ? elloczh : ellocen">
     <el-container>
       <el-header
-        :class="isDark ? 'headbar headbar-dark' : 'headbar headbar-light'"
+        :class="
+          $store.state.isDark ? 'headbar headbar-dark' : 'headbar headbar-light'
+        "
       >
         <div class="logoview row-left">
-          <img class="headlogo" alt="logo" src="./assets/media/logo.png" />
-        </div>
-        <div class="logoviewtitle row-left">
-          {{ pageTitle() }}
+          <template v-if="!$store.state.isDark"
+            ><img
+              class="headlogo"
+              alt="logo"
+              src="./assets/media/B@2x-8.png"
+          /></template>
+          <template v-if="$store.state.isDark">
+            <img
+              class="headlogo"
+              alt="logo"
+              src="./assets/media/W@2x-8.png"
+            />
+          </template>
         </div>
         <div class="mainmenu row-rigth">
           <el-row :gutter="0" justify="end" align="middle">
-            <el-switch
-              v-model="isDark"
-              class="mt-2"
-              style="margin-left: 24px"
-              inline-prompt
-              active-color="#181818"
-              inactive-color="#B0C4DE"
-              active-icon="Moon"
-              inactive-icon="Sunny"
-              :before-change="beforeChange"
-            />
             <template v-if="$store.state.progressList.length > 0">
               <el-popover
                 v-model:visible="$store.state.downloadListVisible"
@@ -72,38 +72,42 @@
                 </template>
               </el-popover>
             </template>
+            <!-- <el-button
+              v-show="$route.name != 'goto'"
+              type="info"
+              icon="Search"
+              circle
+              @click="goQuery()"
+            /> -->
+            <el-switch
+              v-model="$store.state.isDark"
+              class="mt-2"
+              style="margin-left: 8px; margin-right: 8px"
+              inline-prompt
+              active-color="#181818"
+              inactive-color="#B0C4DE"
+              active-icon="Moon"
+              inactive-icon="Sunny"
+              :before-change="beforeChange"
+            />
             <el-menu
               class="flexEnd"
               :default-active="$i18n.locale"
               mode="horizontal"
-              :background-color="isDark ? '#545c64' : 'skyblue'"
-              :text-color="isDark ? '#E5EAF3' : '#000'"
-              :active-text-color="isDark ? '#fff' : '#204472'"
+              :background-color="
+                $store.state.isDark ? '#545c64' : 'rgb(213, 255, 241)'
+              "
+              :text-color="$store.state.isDark ? '#E5EAF3' : '#000'"
+              :active-text-color="$store.state.isDark ? '#fff' : '#204472'"
               :ellipsis="false"
               @select="settinghandleSelect"
             >
-              <el-sub-menu class="menubutton row-rigth" index="user">
-                <template #title>
-                  {{ menuUserName == "" ? $t("button.login") : menuUserName }}
-                </template>
-                <el-menu-item index="login">
-                  {{ $t("button.login") }}
-                </el-menu-item>
-                <el-menu-item index="public">
-                  {{ $t("goto.title") }}
-                </el-menu-item>
-                <el-menu-item index="logout">
-                  {{ $t("button.logout") }}
-                </el-menu-item>
-              </el-sub-menu>
               <el-sub-menu class="menubutton row-rigth" index="lang">
                 <template #title>
                   {{ $t("loc") }}
                 </template>
-                <el-menu-item index="zh-cn"> 简体中文 </el-menu-item>
-                <el-menu-item index="zh-tw"> 繁體中文 </el-menu-item>
+                <el-menu-item index="zh-cn"> 中文 </el-menu-item>
                 <el-menu-item index="en"> English </el-menu-item>
-                <el-menu-item index="ja"> 日本語 </el-menu-item>
               </el-sub-menu>
               <!-- <el-menu-item index="login"> Login </el-menu-item> -->
               <!-- <el-menu-item
@@ -121,11 +125,8 @@
         <!-- <el-aside width="200px">Aside</el-aside> -->
         <!-- <el-container> -->
         <el-main>
-          <router-view></router-view>
-          <el-dialog
-            v-model="$store.state.loginDialogVisible"
-            :title="$t('button.login')"
-          >
+          <router-view v-if="isRouterAlive"></router-view>
+          <!-- <el-dialog v-model="loginDialogVisible" title="Tips" width="30%">
             <el-form ref="ruleFormRef" :model="loginFrom" :rules="rules">
               <el-form-item
                 :label="$t('form.name')"
@@ -148,18 +149,15 @@
             </el-form>
             <template #footer>
               <span class="dialog-footer">
-                <el-button @click="loginPubilc()">{{
-                  $t("goto.title")
-                }}</el-button>
-                <el-button @click="$store.state.loginDialogVisible = false">{{
-                  $t("button.cancel")
-                }}</el-button>
-                <el-button type="primary" @click="loginSub()">{{
-                  $t("button.login")
-                }}</el-button>
+                <el-button @click="loginDialogVisible = false"
+                  >Cancel</el-button
+                >
+                <el-button type="primary" @click="loginSub()"
+                  >Confirm</el-button
+                >
               </span>
             </template>
-          </el-dialog>
+          </el-dialog> -->
         </el-main>
         <!-- <el-footer style="backcolor: yellow">
             <el-button @click="show()">show</el-button>
@@ -188,9 +186,6 @@ import { key } from "./store";
 export default defineComponent({
   data() {
     return {
-      pageTitle: (): string => {
-        return this.$t("title");
-      },
       mainhandleSelect: (key: string) => {
         const strkeys = key.split("/");
         if (strkeys.length > 1) {
@@ -200,38 +195,8 @@ export default defineComponent({
           ElMessage("[message]" + key);
         }
       },
-      loginPubilc: () => {
-        this.$router.push({ name: "goto" });
-        this.$store.state.loginDialogVisible = false;
-      },
-      settinghandleSelect: (key: string) => {
-        if (key == "logout") {
-          // eslint-disable-next-line
-          this.logout().then((resp: any) => {
-            if (resp.code == 10000) {
-              this.$router.push({ name: "login" });
-            }
-          });
-        } else if (key == "login") {
-          this.loginFrom.name = "";
-          this.loginFrom.pw = "";
-          this.$store.state.loginDialogVisible = true;
-        } else if (key == "public") {
-          this.$router.push({ name: "goto" });
-        } else {
-          this.$i18n.locale = key;
-          sessionStorage.setItem("lang", key);
-          this.$router
-            .push({ name: this.$route.name as string, params: { loc: key } })
-            .then(() => {
-              this.$router.go(0);
-            });
-          // window.location.reload();
-        }
-      },
       logoW: "",
-      menuUserName: "",
-      isDark: false,
+      isRouterAlive: true as boolean,
     };
   },
 
@@ -247,8 +212,6 @@ export default defineComponent({
   },
 
   mounted() {
-    document.title = this.$t("title");
-    this.$store.state.loginDialogVisible = false;
     if (
       this.$route.params.loc == undefined ||
       this.$route.params.loc == "undefined" ||
@@ -263,57 +226,67 @@ export default defineComponent({
     }
     const isd = sessionStorage.getItem("isDark");
     if (isd == "1") {
-      this.isDark = true;
+      this.$store.state.isDark = true;
     }
-    this.setDark(this.isDark);
-    const user = sessionStorage.getItem("user");
-    if (user && user.length > 0) {
-      this.menuUserName = user;
-    }
-  },
-
-  beforeChange() {
-    // this.isDark = !this.isDark;
-    const isD = !this.isDark;
-    if (isD) {
-      sessionStorage.setItem("isDark", "1");
-    } else {
-      sessionStorage.setItem("isDark", "0");
-    }
-    this.setDark(isD);
-    return new Promise(function (_resolve) {
-      _resolve(true);
-    });
+    this.setDark(this.$store.state.isDark);
   },
 
   methods: {
-    show() {
-      console.log(JSON.stringify(this.$store.state.progressList));
-    },
-
-    loginSub() {
-      let form = this.$refs.ruleFormRef as HTMLFormElement;
-      // eslint-disable-next-line
-      form.validate((valid: boolean, fields: any) => {
-        if (valid) {
-          console.log("submit!", JSON.stringify(this.loginFrom));
-          // eslint-disable-next-line
-          this.login(this.loginFrom.name, this.loginFrom.pw).then((s: any) => {
-            if (s.code == 10000) {
-              this.menuUserName = this.loginFrom.name;
-              console.log("this.menuUserName", this.menuUserName);
-              this.$store.state.loginDialogVisible = false;
-              const urls = this.$route.fullPath.split("/");
-              if (urls.length > 2) {
-                this.$router.go(0);
-              } else {
-                this.$router.push({ path: "/zh-cn/f/-" });
-              }
-            }
+    settinghandleSelect(key: string) {
+      if (key == "logout") {
+        this.logout().then((resp: any) => {
+          if (resp.code == 10000) {
+            this.$router.push({ name: "login" });
+          }
+        });
+      } else if (key == "login") {
+        this.loginFrom.name = "";
+        this.loginFrom.pw = "";
+        this.loginDialogVisible = true;
+      } else {
+        this.$i18n.locale = key;
+        sessionStorage.setItem("lang", key);
+        if (this.$route.name == "f") {
+          this.isRouterAlive = false;
+          this.$router.push({ name: "f", params: { loc: key } }).then(() => {
+            this.isRouterAlive = true;
+            this.$router.go(0);
           });
-        } else {
-          console.log("error submit!", JSON.stringify(fields));
         }
+        // window.location.reload();
+      }
+    },
+    // show() {
+    //   // console.log(JSON.stringify(this.$store.state.progressList));
+    // },
+
+    // loginSub() {
+    //   let form = this.$refs.ruleFormRef as HTMLFormElement;
+    //
+    //   form.validate((valid: boolean, fields: any) => {
+    //     if (valid) {
+    //       console.log("submit!", JSON.stringify(this.loginFrom));
+    //     } else {
+    //       console.log("error submit!", JSON.stringify(fields));
+    //     }
+    //   });
+    // },
+    goQuery() {
+      sessionStorage.removeItem("exToken");
+      sessionStorage.removeItem("user");
+      this.$router.push({ name: "goto" });
+    },
+    beforeChange(): Promise<boolean> {
+      // this.$store.state.isDark = !this.$store.state.isDark;
+      const isD = !this.$store.state.isDark;
+      if (isD) {
+        sessionStorage.setItem("isDark", "1");
+      } else {
+        sessionStorage.setItem("isDark", "0");
+      }
+      this.setDark(isD);
+      return new Promise(function (_resolve) {
+        _resolve(true);
       });
     },
   },
@@ -338,9 +311,17 @@ body {
 
 .headbar {
   min-width: 345px;
-  background-color: skyblue;
   box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 5px 8px 0 rgba(0, 0, 0, 0.14),
     0 1px 14px 0 rgba(0, 0, 0, 0.12);
+}
+
+.headbar-light {
+  background-color: rgb(213, 255, 241);
+  color: #204472;
+}
+
+.headbar-dark {
+  background-color: #545c64;
 }
 
 .row-left {
@@ -372,7 +353,6 @@ body {
 
 .el-menu {
   border-bottom: none !important;
-  height: 50px;
 }
 
 .el-submenu__title {
@@ -381,22 +361,19 @@ body {
 }
 
 .el-submenu__title:hover {
-  color: skyblue !important;
-  background-color: skyblue !important;
+  color: rgb(213, 255, 241) !important;
+  background-color: #64c1bf !important;
+}
+
+.el-menu-item:hover {
+  color: rgb(213, 255, 241) !important;
+  background-color: #64c1bf !important;
 }
 
 .logoview {
-  padding-left: 20px;
+  width: 118px;
   height: 50px;
-  text-align: left;
-}
-
-.logoviewtitle {
-  padding-left: 20px;
-  height: 50px;
-  line-height: 50px;
-  text-align: left;
-  font-size: large;
+  text-align: center;
 }
 
 .headlogo {
@@ -405,12 +382,8 @@ body {
 }
 
 .mainmenu {
+  width: 35%;
   min-width: 300px;
-}
-
-.mainmenu .el-menu-item,
-.mainmenu .el-sub-menu {
-  border-bottom: none !important;
 }
 
 .rightMenuWidth {
@@ -430,37 +403,13 @@ body {
   align-content: center;
 }
 
-.headbar-light {
-  background-color: skyblue;
-  color: #204472;
-}
-
-.headbar-dark {
-  background-color: #545c64;
-}
-
-@media screen and (max-width: 900px) {
-  .el-dialog {
-    width: 50% !important;
-  }
-}
-
-@media screen and (max-width: 550px) {
-  .el-dialog {
-    width: 80% !important;
-  }
-  .mainmenu {
-    min-width: 100px;
-  }
-}
-
 @media screen and (max-width: 435px) {
-  .logoviewtitle {
-    display: none;
-  }
-
   .logoview {
     width: 85px;
+  }
+
+  .mainmenu {
+    min-width: 235px;
   }
 
   .el-dialog {

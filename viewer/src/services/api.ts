@@ -2,11 +2,10 @@ import axios, { CancelTokenSource } from "axios";
 import { ElNotification } from "element-plus";
 import i18n from "../assets/i18n";
 import qs from "qs";
-import { store } from "@/store";
+// import router from "../router";
 
-// const api = "//192.192.1.1:20520";
-// const api = "//tool.tongdy.com/file";
-const api = "//www.yoooooooooo.com/api/download";
+// const api = "//127.0.0.1:20520";
+const api = "https://tool.tongdy.com/file";
 
 export default {
   methods: {
@@ -52,12 +51,10 @@ export default {
           })
         )
         .then((resp) => {
-          location.reload();
           return resp.data;
         })
         .catch((error) => {
           this._errorhandling(error, false);
-          location.reload();
           return error.response;
         });
     },
@@ -113,7 +110,6 @@ export default {
 
     downloadFile(
       fhash: string,
-      // eslint-disable-next-line
       progress: (e: any) => void,
       cancelTSource: CancelTokenSource
     ) {
@@ -152,19 +148,23 @@ export default {
           ) {
             return error;
           } else {
-            const blob: Blob = error.response.data;
-            const reader = new FileReader();
-            reader.readAsText(blob, "utf8"); // 转换为base64，可以直接放入a表情href
-            reader.onload = (e) => {
-              const msgData = JSON.parse(e.target?.result as string);
-              const msg = {
-                response: {
-                  data: msgData,
-                },
+            if (error.response.data != undefined) {
+              const blob: Blob = error.response.data;
+              const reader = new FileReader();
+              reader.readAsText(blob, "utf8"); // 转换为base64，可以直接放入a表情href
+              reader.onload = (e) => {
+                const msgData = JSON.parse(e.target?.result as string);
+                const msg = {
+                  response: {
+                    data: msgData,
+                  },
+                };
+                this._errorhandling(msg, true);
+                return msgData;
               };
-              this._errorhandling(msg, true);
-              return msgData;
-            };
+            } else {
+              return { name: "CanceledError" };
+            }
           }
         });
     },
@@ -172,7 +172,6 @@ export default {
     _errorhandling(error: any, isbacklogin = true) {
       let err: string = error.message;
       let code = 0;
-      // eslint-disable-next-line
       const resp: any | null = error.response;
       let p = "";
       if (resp != null) {
@@ -193,11 +192,7 @@ export default {
         type: "error",
       });
       if (isbacklogin && (code == 4000 || code == 3900)) {
-        // router.push({ name: "w" });
         this._backlogin(err);
-        store.state.loginDialogVisible = true;
-        sessionStorage.removeItem("exToken");
-        sessionStorage.removeItem("user");
       }
     },
 

@@ -6,12 +6,7 @@ export default createRouter({
   routes: [
     {
       path: "",
-      redirect: "/welcome", //"/zh-cn/f/admin/admin/-",
-    },
-    {
-      path: "/:loc/f/:fold",
-      name: "fn",
-      component: Home.Home,
+      redirect: "/goto",
     },
     {
       path: "/:loc/f/:u/:p/:fold",
@@ -22,11 +17,6 @@ export default createRouter({
       path: "/goto",
       name: "goto",
       component: Home.GoTo,
-    },
-    {
-      path: "/welcome",
-      name: "w",
-      component: Home.Welcome,
     },
     {
       path: "/about",

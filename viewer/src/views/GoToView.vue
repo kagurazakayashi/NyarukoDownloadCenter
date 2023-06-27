@@ -1,16 +1,20 @@
 <template>
   <div class="GoTo">
-    <h1>{{ $t("goto.title") }}</h1>
+    <h1 v-show="$store.state.isDark" style="color: #fff">
+      {{ $t("goto.title") }}
+    </h1>
+    <h1 v-show="!$store.state.isDark" style="color: #204472">
+      {{ $t("goto.title") }}
+    </h1>
     <el-row justify="center" align="middle">
       <el-col>
         <el-autocomplete
-          v-model="state1"
+          v-model="autoCompleteValue"
           :fetch-suggestions="querySearch"
           :trigger-on-focus="false"
           clearable
           style="width: 100%"
           :placeholder="$t('goto.input')"
-          @select="handleSelect"
         /> </el-col
     ></el-row>
     <el-row justify="center" align="middle"
@@ -31,32 +35,29 @@ interface RestaurantItem {
   value: string;
 }
 interface type {
-  state1: string;
+  autoCompleteValue: string;
 }
-const restaurants = ref<RestaurantItem[]>([]);
+let restaurants = ref<RestaurantItem[]>([]);
 
 export default defineComponent({
   data() {
-    return { state1: "" } as type;
+    return { autoCompleteValue: "" } as type;
   },
   mixins: [urlAPI],
   components: {},
   mounted() {
-    console.log(window.location.href);
-    this.userList().then(
-      // eslint-disable-next-line
-      (res: any) => {
-        if (res == null || res.code != 10000) {
-          return;
-        }
-        const userNames: string[] = res.data.data as string[];
-        const selects: RestaurantItem[] = [];
-        for (const userName of userNames) {
-          selects.push({ value: userName });
-        }
-        restaurants.value = selects;
+    // console.log(window.location.href);
+    this.userList().then((res: any) => {
+      if (res == null || res.code != 10000) {
+        return;
       }
-    );
+      const userNames: string[] = res.data.data as string[];
+      let selects: RestaurantItem[] = [];
+      for (const userName of userNames) {
+        selects.push({ value: userName });
+      }
+      restaurants.value = selects;
+    });
   },
   methods: {
     querySearch(queryString: string, cb: any) {
@@ -66,9 +67,11 @@ export default defineComponent({
       // call callback function to return suggestions
       cb(results);
     },
-    handleSelect(item: RestaurantItem) {
-      console.log(item);
-    },
+    // handleSelect() {
+    //   // console.log(item);
+    //   // console.log(this.autoCompleteValue);
+    //   this.goto();
+    // },
     loadAll(ri: RestaurantItem[]) {
       return ri;
     },
@@ -83,7 +86,7 @@ export default defineComponent({
     goto() {
       let isOK = false;
       for (const iterator of restaurants.value) {
-        if (iterator.value == this.state1) {
+        if (iterator.value == this.autoCompleteValue) {
           isOK = true;
           break;
         }
@@ -92,20 +95,16 @@ export default defineComponent({
         ElMessage.error(this.$t("tips.notfound"));
         return;
       }
-      this.login(this.state1, this.state1).then(() => {
-        this.$router
-          .push({
-            name: "f",
-            params: {
-              loc: this.$i18n.locale,
-              u: this.state1,
-              p: this.state1,
-              fold: "-",
-            },
-          })
-          .then(() => {
-            this.$router.go(0);
-          });
+      this.login(this.autoCompleteValue, this.autoCompleteValue).then(() => {
+        this.$router.push({
+          name: "f",
+          params: {
+            loc: this.$i18n.locale,
+            u: this.autoCompleteValue,
+            p: this.autoCompleteValue,
+            fold: "-",
+          },
+        });
       });
     },
   },

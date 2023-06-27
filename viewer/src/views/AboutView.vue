@@ -13,7 +13,7 @@ export default defineComponent({
   mixins: [],
   components: {},
   mounted() {
-    console.log(window.location.href);
+    // console.log(window.location.href);
   },
 });
 </script>

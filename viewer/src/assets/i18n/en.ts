@@ -1,6 +1,5 @@
 export default {
   loc: "English",
-  title: "Download Center",
   page: {
     organizeData: "Organize abnormal data",
     root: "Root directory",
@@ -11,7 +10,6 @@ export default {
     size: "Size",
   },
   text: {
-    welcome: "Welcome",
     test: "Test",
   },
   form: {
@@ -62,7 +60,7 @@ export default {
     notfound: "Not found",
   },
   goto: {
-    title: "Public account login",
-    input: "Please enter the public account name",
+    title: "Query Download",
+    input: "Please enter the device model (e.g. MSD)",
   },
 };

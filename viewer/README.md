@@ -1,4 +1,4 @@
-# template
+# file-viewer
 
 ## Project setup
 ```
