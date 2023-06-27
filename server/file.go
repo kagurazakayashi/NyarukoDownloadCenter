@@ -408,7 +408,7 @@ func fileUpdata(w http.ResponseWriter, req *http.Request, c chan []byte) {
 	if !OpenUPFile {
 		uhash = fromuhash[0]
 	}
-	sqlstr := "call `user_test`.`f_a_add`('" + uhash + "', '" + fileHash + "', '" + fromfolderPath[0] + "', @isadd);"
+	sqlstr := "call `f_a_add`('" + uhash + "', '" + fileHash + "', '" + fromfolderPath[0] + "', @isadd);"
 	fd, err := nyaMS.FreequeryData(sqlstr, nil)
 	if err != nil {
 		errs := strings.Split(err.Error(), "foreign key constraint fails")

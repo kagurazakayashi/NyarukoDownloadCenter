@@ -8,7 +8,7 @@
       >
     </template>
   </el-breadcrumb>
-  <template v-if="screenWidth <= 600">
+  <template v-if="screenWidth <= 500">
     <div style="height: 15px"></div>
     <template v-for="item in tableDatas" v-bind:key="item.hash">
       <el-card
@@ -150,7 +150,7 @@
       </template>
     </el-table-column>
     <el-table-column prop="name" :label="$t('tableHeard.name')" />
-    <el-table-column prop="describe" :label="$t('tableHeard.describe')" />
+    <!-- <el-table-column prop="describe" :label="$t('tableHeard.describe')" /> -->
     <el-table-column prop="size" :width="110" :label="$t('tableHeard.size')">
       <template #default="scope">
         <template v-if="scope.row.type == 'folder'"> </template>
