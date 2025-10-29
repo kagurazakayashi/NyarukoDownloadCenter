@@ -150,6 +150,8 @@ func getPublicVariable() {
 	returnMessageFilePath := gjson.Get(conf, "returnMessageFilePath")
 	if returnMessageFilePath.Exists() {
 		nyahttphandle.AlertInfoTemplateLoad(returnMessageFilePath.String())
+	} else {
+		panic(fmt.Sprintf("没找到返回信息文件:%s", returnMessageFilePath))
 	}
 	OpenRegistrationJson := gjson.Get(conf, "OpenRegistration")
 	if OpenRegistrationJson.Exists() {
